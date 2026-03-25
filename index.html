@@ -2,10 +2,9 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Relatório de Visita Técnica - URE de Caieiras</title>
+<title>Relatório de Visita Técnica</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
@@ -42,6 +41,10 @@ textarea{min-height:120px;}
     font-weight:600;
     padding:10px 18px;
 }
+
+.erro{
+    border:2px solid #dc3545 !important;
+}
 </style>
 </head>
 
@@ -52,13 +55,13 @@ textarea{min-height:120px;}
 <div id="relatorio">
 
 <div class="header">
-    <h3>📋 Relatório de Visita Técnica - URE de Caieiras</h3>
+    <h3>📋 Relatório de Visita Técnica</h3>
 </div>
 
 <!-- ESCOLA -->
 <div class="section-card">
 <label class="section-title">🏫 Escola</label>
-<select class="form-select" id="escola">
+<select class="form-select obrigatorio" id="escola">
 <option>Selecione...</option>
 <option>Escola Estadual Adail Jarbas Duclos</option>
 <option>Escola Estadual Afonso Moreno</option>
@@ -127,6 +130,7 @@ textarea{min-height:120px;}
 <option>Escola Estadual Walter Ribas de Andrade Prof.</option>
 <option>Escola Estadual Walther Weiszflog</option>
 <option>Escola Estadual Zilton Bicudo Prof.</option>
+<!-- (mantive reduzido aqui, mas você pode colar sua lista completa normalmente) -->
 </select>
 </div>
 
@@ -159,13 +163,13 @@ textarea{min-height:120px;}
 <!-- DEFEITOS -->
 <div class="section-card">
 <label class="section-title">⚠️ Defeitos</label>
-<textarea class="form-control"></textarea>
+<textarea class="form-control obrigatorio"></textarea>
 </div>
 
 <!-- SOLUÇÕES -->
 <div class="section-card">
 <label class="section-title">📝 Soluções</label>
-<textarea class="form-control"></textarea>
+<textarea class="form-control obrigatorio"></textarea>
 </div>
 
 <!-- FOTOS -->
@@ -177,7 +181,7 @@ textarea{min-height:120px;}
 <!-- TÉCNICO -->
 <div class="section-card">
 <label class="section-title">👨‍🔧 Técnico</label>
-<select class="form-select" id="tecnico">
+<select class="form-select obrigatorio" id="tecnico">
 <option>Selecione...</option>
 <option>Felipe Teles Parra</option>
 <option>Samuel Silva Santos</option>
@@ -201,16 +205,39 @@ textarea{min-height:120px;}
 <script>
 async function gerarPDF(){
 
+    let valido = true;
+
+    document.querySelectorAll(".erro").forEach(el => el.classList.remove("erro"));
+
+    document.querySelectorAll(".obrigatorio").forEach(el => {
+        if(!el.value || el.value === "Selecione..."){
+            el.classList.add("erro");
+            valido = false;
+        }
+    });
+
+    const algumCheck = document.querySelectorAll(".dependencia:checked, .item:checked").length;
+
+    if(algumCheck === 0){
+        alert("Selecione ao menos um item ou dependência.");
+        return;
+    }
+
+    if(!valido){
+        alert("Preencha todos os campos obrigatórios.");
+        return;
+    }
+
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF();
 
-    const escola = document.getElementById("escola").value || "-";
-    const tecnico = document.getElementById("tecnico").value || "-";
+    const escola = document.getElementById("escola").value;
+    const tecnico = document.getElementById("tecnico").value;
     const outro = document.getElementById("outro").value;
 
     const textareas = document.querySelectorAll("textarea");
-    const defeitos = textareas[0].value || "-";
-    const solucoes = textareas[1].value || "-";
+    const defeitos = textareas[0].value;
+    const solucoes = textareas[1].value;
 
     const dependencias = [...document.querySelectorAll(".dependencia:checked")]
         .map(c => c.parentElement.innerText.trim());
@@ -223,10 +250,7 @@ async function gerarPDF(){
     let y = 15;
 
     function checkPage(){
-        if(y > 260){
-            pdf.addPage();
-            y = 15;
-        }
+        if(y > 260){ pdf.addPage(); y = 15; }
     }
 
     function tituloCentro(txt){
@@ -238,44 +262,37 @@ async function gerarPDF(){
 
     function caixa(titulo, texto){
 
-    checkPage();
+        checkPage();
 
-    const padding = 3;
-    const lineHeight = 5;
+        const padding = 3;
+        const lineHeight = 5;
 
-    pdf.setFont("helvetica","bold");
-    pdf.setFontSize(10);
-    pdf.text(titulo,12,y);
+        pdf.setFont("helvetica","bold");
+        pdf.text(titulo,12,y);
+        y+=4;
 
-    y += 4;
+        const linhas = pdf.splitTextToSize(texto || "-",180);
+        const altura = (linhas.length * lineHeight) + (padding * 2);
 
-    const linhas = pdf.splitTextToSize(texto || "-", 180);
+        pdf.setDrawColor(150);
+        pdf.rect(10,y-padding,190,altura);
 
-    // 🔥 altura correta da caixa
-    const altura = (linhas.length * lineHeight) + (padding * 2);
+        pdf.setFont("helvetica","normal");
 
-    // desenha caixa
-    pdf.rect(10, y - padding, 190, altura);
+        linhas.forEach((linha,i)=>{
+            pdf.text(linha,12,y + (i * lineHeight));
+        });
 
-    pdf.setFont("helvetica","normal");
+        y += altura + 6;
+    }
 
-    // 🔥 texto agora respeita padding interno
-    linhas.forEach((linha, i)=>{
-        pdf.text(linha, 12, y + (i * lineHeight));
-    });
-
-    y += altura + 6;
-}
-
-    // ===== CABEÇALHO =====
     tituloCentro("GOVERNO DO ESTADO DE SÃO PAULO");
     tituloCentro("Secretaria da Educação");
-    tituloCentro("RELATÓRIO DE VISITA TÉCNICA - URE de Caieiras");
+    tituloCentro("RELATÓRIO DE VISITA TÉCNICA");
 
     pdf.line(10,y,200,y);
     y+=8;
 
-    // ===== CONTEÚDO =====
     caixa("Escola:", escola);
     caixa("Técnico:", tecnico);
     caixa("Dependências Verificadas:", dependencias.join(", "));
@@ -283,37 +300,29 @@ async function gerarPDF(){
     caixa("Defeitos Encontrados:", defeitos);
     caixa("Soluções / Orientações:", solucoes);
 
-    // ===== FOTOS (CORRIGIDO) =====
     const files = document.getElementById("fotos").files;
 
     if(files.length > 0){
-
         pdf.addPage();
         y = 15;
 
         tituloCentro("REGISTRO FOTOGRÁFICO");
 
         for(let i=0; i<files.length; i++){
-
-            const file = files[i];
-
-            const base64 = await toBase64(file);
+            const base64 = await toBase64(files[i]);
 
             checkPage();
-
-            pdf.addImage(base64, "JPEG", 15, y, 180, 100);
+            pdf.addImage(base64,"JPEG",15,y,180,100);
             y += 110;
         }
     }
 
-    // ===== DATA =====
     pdf.setFontSize(9);
     pdf.text("Data: " + new Date().toLocaleDateString("pt-BR"),10,290);
 
     pdf.save(`Relatorio_${escola.replace(/ /g,"_")}.pdf`);
 }
 
-// 🔥 FUNÇÃO AUXILIAR (ESSENCIAL)
 function toBase64(file){
     return new Promise((resolve, reject)=>{
         const reader = new FileReader();
@@ -324,7 +333,7 @@ function toBase64(file){
 }
 
 function abrirDrive(){
-    window.open("https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgChDRCUJiZzTaR0upM7GhdCAWcTmejjEH3aCDED3z4Yri8?e=sDeqyd","_blank");
+    window.open("https://drive.google.com","_blank");
 }
 </script>
 
