@@ -8,9 +8,47 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-body{background:#f4f7fb;}
-.card{border-radius:16px;}
-textarea{min-height:120px;}
+body{
+    background: linear-gradient(135deg,#eef4ff,#f8fbff);
+    font-family: "Segoe UI";
+}
+
+.card{
+    border:none;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.section-title{
+    font-weight:700;
+    color:#1e3a5f;
+    margin-bottom:10px;
+}
+
+textarea{
+    min-height:120px;
+}
+
+.form-check{
+    margin-bottom:5px;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.header h3{
+    font-weight:700;
+}
+
+.badge-title{
+    background:#0d6efd;
+    padding:6px 12px;
+    border-radius:20px;
+    color:#fff;
+    font-size:.8rem;
+}
 </style>
 </head>
 
@@ -18,16 +56,20 @@ textarea{min-height:120px;}
 
 <div class="container py-4">
 
-<div class="card shadow p-4" id="relatorio">
+<div class="card p-4" id="relatorio">
 
-<h3 class="mb-4 text-center">📋 Relatório de Visita Técnica</h3>
+<div class="header">
+<h3>📋 Relatório de Visita Técnica</h3>
+<span class="badge-title" id="dataAtual"></span>
+</div>
 
 <!-- ESCOLA -->
 <div class="mb-3">
-<label class="form-label">Escola</label>
+<label class="section-title">🏫 Escola</label>
 <select class="form-select" id="escola">
 <option>Selecione...</option>
 
+<!-- SUA LISTA PERMANECE -->
 <option>Escola Estadual Adail Jarbas Duclos</option>
 <option>Escola Estadual Afonso Moreno</option>
 <option>Escola Estadual Aladino Polon</option>
@@ -95,54 +137,64 @@ textarea{min-height:120px;}
 <option>Escola Estadual Walter Ribas de Andrade Prof.</option>
 <option>Escola Estadual Walther Weiszflog</option>
 <option>Escola Estadual Zilton Bicudo Prof.</option>
+<!-- ... (mantém todas que você já colocou) -->
 
 </select>
 </div>
 
 <!-- DEPENDÊNCIAS -->
 <div class="mb-3">
-<label class="form-label">Dependências verificadas</label>
-
+<label class="section-title">🏢 Dependências verificadas</label>
+<div class="row">
+<div class="col-md-6">
 <div class="form-check"><input class="form-check-input" type="checkbox"> Direção</div>
 <div class="form-check"><input class="form-check-input" type="checkbox"> Secretaria</div>
 <div class="form-check"><input class="form-check-input" type="checkbox"> Coordenação</div>
+</div>
+<div class="col-md-6">
 <div class="form-check"><input class="form-check-input" type="checkbox"> Sala dos Professores</div>
 <div class="form-check"><input class="form-check-input" type="checkbox"> Sala de Informática</div>
 <div class="form-check"><input class="form-check-input" type="checkbox"> Sala de Leitura</div>
+</div>
+</div>
 
 <input type="text" class="form-control mt-2" placeholder="Outro (descrever)">
 </div>
 
 <!-- ITENS -->
 <div class="mb-3">
-<label class="form-label">Itens verificados</label>
-
+<label class="section-title">🛠️ Itens verificados</label>
+<div class="row">
+<div class="col-md-6">
 <div class="form-check"><input class="form-check-input" type="checkbox"> Access Points</div>
 <div class="form-check"><input class="form-check-input" type="checkbox"> Notebooks</div>
 <div class="form-check"><input class="form-check-input" type="checkbox"> Tablets</div>
+</div>
+<div class="col-md-6">
 <div class="form-check"><input class="form-check-input" type="checkbox"> Espelhamento das câmeras</div>
 <div class="form-check"><input class="form-check-input" type="checkbox"> Banda de internet</div>
 <div class="form-check"><input class="form-check-input" type="checkbox"> Racks e Switches</div>
 </div>
+</div>
+</div>
 
 <!-- DEFEITOS -->
 <div class="mb-3">
-<label class="form-label">Defeitos relatados / encontrados</label>
+<label class="section-title">⚠️ Defeitos encontrados</label>
 <textarea class="form-control"></textarea>
 </div>
 
 <!-- DESCRIÇÃO -->
 <div class="mb-3">
-<label class="form-label">Descrição das atividades / soluções / orientações</label>
+<label class="section-title">📝 Soluções / Orientações</label>
 <textarea class="form-control"></textarea>
 </div>
 
 <!-- TÉCNICO -->
 <div class="mb-3">
-<label class="form-label">Técnico responsável</label>
+<label class="section-title">👨‍🔧 Técnico</label>
 <select class="form-select">
 <option>Selecione...</option>
-
 <option>Felipe Teles Parra</option>
 <option>Samuel Silva Santos</option>
 <option>Jaqueline Bieging de Oliveira Jacino</option>
@@ -150,7 +202,6 @@ textarea{min-height:120px;}
 <option>Alexandre Vinicius Martins da Silva</option>
 <option>José Roberto</option>
 <option>José Luis</option>
-
 </select>
 </div>
 
@@ -158,26 +209,38 @@ textarea{min-height:120px;}
 
 <!-- BOTÕES -->
 <div class="text-center mt-4">
-<button class="btn btn-primary" onclick="gerarPDF()">📄 Gerar PDF</button>
-<button class="btn btn-success" onclick="abrirDrive()">📂 Abrir Pasta do Drive</button>
+<button class="btn btn-primary px-4" onclick="gerarPDF()">📄 Gerar PDF</button>
+<button class="btn btn-success px-4" onclick="abrirDrive()">📂 Abrir Drive</button>
 </div>
 
 </div>
 
 <script>
+// DATA AUTOMÁTICA
+const hoje = new Date();
+document.getElementById("dataAtual").innerText =
+    hoje.toLocaleDateString("pt-BR");
+
+// PDF OTIMIZADO (SEM TRAVAR)
 function gerarPDF(){
+
     const element = document.getElementById("relatorio");
 
-    html2pdf().from(element).set({
-        margin:0.5,
-        filename:'relatorio_visita.pdf',
-        html2canvas:{scale:2},
-        jsPDF:{unit:'in',format:'a4'}
-    }).save();
+    const escola = document.getElementById("escola").value || "relatorio";
+
+    const opt = {
+        margin: 0.3,
+        filename: `Relatorio_${escola.replace(/ /g,'_')}.pdf`,
+        image: { type: 'jpeg', quality: 0.9 },
+        html2canvas: { scale: 1 }, // 🔥 reduz travamento
+        jsPDF: { unit: 'in', format: 'a4' }
+    };
+
+    html2pdf().set(opt).from(element).save();
 }
 
 function abrirDrive(){
-    window.open("https://drive.google.com", "_blank"); // coloque sua pasta aqui depois
+    window.open("https://drive.google.com", "_blank");
 }
 </script>
 
