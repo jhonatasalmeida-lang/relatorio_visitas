@@ -336,8 +336,34 @@ function toBase64(file){
 }
 
 function abrirDrive(){
-    window.open("https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgChDRCUJiZzTaR0upM7GhdCAWcTmejjEH3aCDED3z4Yri8","_blank");
+
+    const hoje = new Date();
+    const mes = String(hoje.getMonth() + 1).padStart(2,'0');
+
+    const pastas = {
+        "01": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgB1H1R67z9bQpm9GvUrFi2rAQdlYzPToUC5U_YZHeBTa_c?e=cWOTXS",
+        "02": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgDz5zErJublQbMtbX1uOo62ARuv-cUEewJ_R2gEsQWPcCU?e=A65i1J",
+        "03": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgCCavZtwSpzRLJnmpERdxNPAbqBQIa8-1EWsKSTFv-Zm24?e=a5nC7f",
+        "04": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgAPmALLKrXVQp5oNq8lJ1PCAU5gwOCSnMDHQFConfmzmwU?e=ID1Uvk",
+        "05": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgCdS4FhNfZ3Q6D-uvZ296k8ARkKvJjBTtLvpjGYb9fzKOE?e=dMhCEw",
+        "06": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgDnSQHL3JCbSrs21RGXbxoFAcEyPTdLa-7Rsar3B3Abn84?e=CNEzRF",
+        "07": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgBP8UlbG9pbT7ckTRYU0OBIAaLcEHpX3wAkdNvhSevnW2E?e=uSdVJH",
+        "08": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgAhEU0qSqwVSoVCJLdTX82WAe7rV9EWVkOAyM-TgsmyqLM?e=hXs59x",
+        "09": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgBYRhxhfuc0S7bOg768ljDaAXzBrL2NgXZ_Ws0f-RJgP_I?e=R39fVF",
+        "10": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgAyK6h4pU_qQ7n65DA4azkFAf2uuNZRZp8s8iDW95aOfnk?e=bgiu3t",
+        "11": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgBWo_vtDOYZQI746n-Rng4RAcTusj5tJlP8qd1xrxWenlI?e=vjgtav",
+        "12": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgCLc7V6FILISYz-_XVy2oA0AROGLIEN-k7-Bh7voirMYNA?e=7BNiEe",
+        // restante...
+    };
+
+    if(pastas[mes]){
+        window.open(pastas[mes], "_blank");
+        console.log("Abrindo pasta do mês:", mes);
+    }else{
+        alert("Pasta do mês não configurada.");
+    }
 }
+    
 </script>
 
 </body>
