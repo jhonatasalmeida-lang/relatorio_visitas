@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Relatório de Visita Técnica</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+body{background:#f4f7fb;}
+.card{border-radius:16px;}
+textarea{min-height:120px;}
+</style>
+</head>
+
+<body>
+
+<div class="container py-4">
+
+<div class="card shadow p-4" id="relatorio">
+
+<h3 class="mb-4 text-center">📋 Relatório de Visita Técnica</h3>
+
+<!-- ESCOLA -->
+<div class="mb-3">
+<label class="form-label">Escola</label>
+<select class="form-select" id="escola">
+<option>Selecione...</option>
+
+<option>Escola Estadual Adail Jarbas Duclos</option>
+<option>Escola Estadual Afonso Moreno</option>
+<option>Escola Estadual Aladino Polon</option>
+<option>Escola Estadual Alberto Graf Capitão</option>
+<option>Escola Estadual Albino Fiore</option>
+<option>Escola Estadual Alfried Theodor Weisflog</option>
+<option>Escola Estadual Ana Maria Garrido Orlandin Profª</option>
+<option>Escola Estadual Aparecido Roberto Tonellotti Prof.</option>
+<option>Escola Estadual Armando Sestini</option>
+<option>Escola Estadual Arthur Weingrill</option>
+<option>Escola Estadual Azevedo Soares</option>
+<option>Escola Estadual Bairro do Itaim</option>
+<option>Escola Estadual Bairro Jundiaizinho</option>
+<option>Escola Estadual Belém da Serra</option>
+<option>Escola Estadual Benedito Aparecido Tavares Prof.</option>
+<option>Escola Estadual Benedito Fagundes Marques (BEFAMA)</option>
+<option>Escola Estadual Bueno de Azevedo Filho Prof.</option>
+<option>Escola Estadual Carlos Augusto de Pádua Fleury Prof.</option>
+<option>Escola Estadual Celestina Valente Lengenfelder - Profª</option>
+<option>Escola Estadual Chácara Camponesa/ Jd. Vassouras</option>
+<option>Escola Estadual Domingos Cambiaghi Prof.</option>
+<option>Escola Estadual Élcio José Pereira Cotrim Prof.</option>
+<option>Escola Estadual Elvira Parada Manga Profª</option>
+<option>Escola Estadual Francisco Gonçalves Vieira Prof.</option>
+<option>Escola Estadual Hermelina de Albuquerque Passarella</option>
+<option>Escola Estadual Iraci Sartori Vieira da Silva Profª</option>
+<option>Escola Estadual Isaías Luiz Matiazzo</option>
+<option>Escola Estadual Isaura de Miranda Botto profª</option>
+<option>Escola Estadual Isaura Valentini Hanser Profª.</option>
+<option>Escola Estadual Ivone dos Anjos da Silva - Profª.</option>
+<option>Escola Estadual Jardim Alegria II</option>
+<option>Escola Estadual Jardim das Rosas</option>
+<option>Escola Estadual Jardim São Francisco</option>
+<option>Escola Estadual Jardim Silvia II</option>
+<option>Escola Estadual Joaquim Marques da Silva Sobrinho Tenente</option>
+<option>Escola Estadual Jocimara Vieira da Silva Profª.</option>
+<option>Escola Estadual José Carlos da Silva JR.</option>
+<option>Escola Estadual José de Barros Martins Editor</option>
+<option>Escola Estadual José parada Prof. (Parque Vitória IV)</option>
+<option>Escola Estadual José Roberto Melchior Dr.</option>
+<option>Escola Estadual Kátia Maria Tarifa Leme Tonelli Profª.</option>
+<option>Escola Estadual Lenita Corrêa Camargo Profª.</option>
+<option>Escola Estadual Luiz Alexandre dos Santos Vereador</option>
+<option>Escola Estadual Lydia Scalet Walker Profª.</option>
+<option>Escola Estadual Maria Zeza Gomes de Oliveira</option>
+<option>Escola Estadual Mário Toledo de Moraes Dr.</option>
+<option>Escola Estadual Nair Hannickel Romaro</option>
+<option>Escola Estadual Nelson Manzanares Dr.</option>
+<option>Escola Estadual Nide Zaim Cardoso Profª.</option>
+<option>Escola Estadual Odarico Oliveira Nascimento Profª.</option>
+<option>Escola Estadual Olindo Dártora Dr.</option>
+<option>Escola Estadual Otto Weiszflog</option>
+<option>Escola Estadual Ozilde Albuquerque Passarella Dr.</option>
+<option>Escola Estadual Parque Cento e Vinte II</option>
+<option>Escola Estadual Paulo Duarte</option>
+<option>Escola Estadual Pedro Galrão do Nascimento</option>
+<option>Escola Estadual Pedro Lelis de Souza (Jd. Luciana II)</option>
+<option>Escola Estadual Pedro Paulo Aguiar - PPA</option>
+<option>Escola Estadual Pietro Petri</option>
+<option>Escola Estadual Rituco Mitani Profª</option>
+<option>Escola Estadual Rogério Levorin Prof.</option>
+<option>Escola Estadual Suzana Dias</option>
+<option>Escola Estadual Ulysses Sanches Ramires Prof.</option>
+<option>Escola Estadual Vincenzo Lobassi</option>
+<option>Escola Estadual Walter Ribas de Andrade Prof.</option>
+<option>Escola Estadual Walther Weiszflog</option>
+<option>Escola Estadual Zilton Bicudo Prof.</option>
+
+</select>
+</div>
+
+<!-- DEPENDÊNCIAS -->
+<div class="mb-3">
+<label class="form-label">Dependências verificadas</label>
+
+<div class="form-check"><input class="form-check-input" type="checkbox"> Direção</div>
+<div class="form-check"><input class="form-check-input" type="checkbox"> Secretaria</div>
+<div class="form-check"><input class="form-check-input" type="checkbox"> Coordenação</div>
+<div class="form-check"><input class="form-check-input" type="checkbox"> Sala dos Professores</div>
+<div class="form-check"><input class="form-check-input" type="checkbox"> Sala de Informática</div>
+<div class="form-check"><input class="form-check-input" type="checkbox"> Sala de Leitura</div>
+
+<input type="text" class="form-control mt-2" placeholder="Outro (descrever)">
+</div>
+
+<!-- ITENS -->
+<div class="mb-3">
+<label class="form-label">Itens verificados</label>
+
+<div class="form-check"><input class="form-check-input" type="checkbox"> Access Points</div>
+<div class="form-check"><input class="form-check-input" type="checkbox"> Notebooks</div>
+<div class="form-check"><input class="form-check-input" type="checkbox"> Tablets</div>
+<div class="form-check"><input class="form-check-input" type="checkbox"> Espelhamento das câmeras</div>
+<div class="form-check"><input class="form-check-input" type="checkbox"> Banda de internet</div>
+<div class="form-check"><input class="form-check-input" type="checkbox"> Racks e Switches</div>
+</div>
+
+<!-- DEFEITOS -->
+<div class="mb-3">
+<label class="form-label">Defeitos relatados / encontrados</label>
+<textarea class="form-control"></textarea>
+</div>
+
+<!-- DESCRIÇÃO -->
+<div class="mb-3">
+<label class="form-label">Descrição das atividades / soluções / orientações</label>
+<textarea class="form-control"></textarea>
+</div>
+
+<!-- TÉCNICO -->
+<div class="mb-3">
+<label class="form-label">Técnico responsável</label>
+<select class="form-select">
+<option>Selecione...</option>
+
+<option>Felipe Teles Parra</option>
+<option>Samuel Silva Santos</option>
+<option>Jaqueline Bieging de Oliveira Jacino</option>
+<option>Brandon Ken Honda</option>
+<option>Alexandre Vinicius Martins da Silva</option>
+<option>José Roberto</option>
+<option>José Luis</option>
+
+</select>
+</div>
+
+</div>
+
+<!-- BOTÕES -->
+<div class="text-center mt-4">
+<button class="btn btn-primary" onclick="gerarPDF()">📄 Gerar PDF</button>
+<button class="btn btn-success" onclick="abrirDrive()">📂 Abrir Pasta do Drive</button>
+</div>
+
+</div>
+
+<script>
+function gerarPDF(){
+    const element = document.getElementById("relatorio");
+
+    html2pdf().from(element).set({
+        margin:0.5,
+        filename:'relatorio_visita.pdf',
+        html2canvas:{scale:2},
+        jsPDF:{unit:'in',format:'a4'}
+    }).save();
+}
+
+function abrirDrive(){
+    window.open("https://drive.google.com", "_blank"); // coloque sua pasta aqui depois
+}
+</script>
+
+</body>
+</html>
