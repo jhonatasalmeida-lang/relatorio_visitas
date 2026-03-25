@@ -266,19 +266,22 @@ async function gerarPDF(){
 
         const padding = 3;
         const lineHeight = 5;
-
+        
         pdf.setFont("helvetica","bold");
+        pdf.setFontSize(10);
         pdf.text(titulo,12,y);
-        y+=4;
-
+        y+=5;
+        
+        // ⚠️ FORÇA reset completo antes do texto
+        pdf.setFont("helvetica","normal");
+        pdf.setFontSize(10);
+        
         const linhas = pdf.splitTextToSize(texto || "-",180);
         const altura = (linhas.length * lineHeight) + (padding * 2);
-
+        
         pdf.setDrawColor(150);
         pdf.rect(10,y-padding,190,altura);
-
-        pdf.setFont("helvetica","normal");
-
+        
         linhas.forEach((linha,i)=>{
             pdf.text(linha,12,y + (i * lineHeight));
         });
