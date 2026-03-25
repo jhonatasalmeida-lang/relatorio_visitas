@@ -238,26 +238,34 @@ async function gerarPDF(){
 
     function caixa(titulo, texto){
 
-        checkPage();
+    checkPage();
 
-        pdf.setFont("helvetica","bold");
-        pdf.setFontSize(10);
-        pdf.text(titulo,12,y);
-        y+=4;
+    const padding = 3;
+    const lineHeight = 5;
 
-        const linhas = pdf.splitTextToSize(texto || "-",180);
-        const altura = (linhas.length * 5) + 6;
+    pdf.setFont("helvetica","bold");
+    pdf.setFontSize(10);
+    pdf.text(titulo,12,y);
 
-        pdf.rect(10,y-2,190,altura);
+    y += 4;
 
-        pdf.setFont("helvetica","normal");
+    const linhas = pdf.splitTextToSize(texto || "-", 180);
 
-        linhas.forEach((l,i)=>{
-            pdf.text(l,12,y + (i*5));
-        });
+    // 🔥 altura correta da caixa
+    const altura = (linhas.length * lineHeight) + (padding * 2);
 
-        y += altura + 6;
-    }
+    // desenha caixa
+    pdf.rect(10, y - padding, 190, altura);
+
+    pdf.setFont("helvetica","normal");
+
+    // 🔥 texto agora respeita padding interno
+    linhas.forEach((linha, i)=>{
+        pdf.text(linha, 12, y + (i * lineHeight));
+    });
+
+    y += altura + 6;
+}
 
     // ===== CABEÇALHO =====
     tituloCentro("GOVERNO DO ESTADO DE SÃO PAULO");
