@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Painel de Visitas</title>
+
+<style>
+body{
+    font-family: 'Segoe UI';
+    background:#f0f2f5;
+    margin:0;
+}
+
+header{
+    background:#1e3a8a;
+    color:white;
+    padding:20px;
+    text-align:center;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.container{
+    padding:20px;
+}
+
+.filtros{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+select,input{
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(300px,1fr));
+    gap:15px;
+}
+
+.card{
+    background:white;
+    border-radius:12px;
+    padding:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
+    transition:0.2s;
+}
+
+.card:hover{
+    transform:scale(1.02);
+}
+
+.preventiva{
+    border-left:6px solid #16a34a;
+}
+
+.corretiva{
+    border-left:6px solid #dc2626;
+}
+
+.top{
+    display:flex;
+    justify-content:space-between;
+    font-weight:bold;
+}
+
+.badge{
+    padding:4px 8px;
+    border-radius:6px;
+    color:white;
+    font-size:12px;
+}
+
+.prev{background:#16a34a;}
+.corr{background:#dc2626;}
+
+</style>
+</head>
+
+<body>
+
+<header>Painel de Visitas Técnicas</header>
+
+<div class="container">
+
+<div class="filtros">
+    <input type="date" id="fData">
+
+    <select id="fMunicipio"></select>
+    <select id="fTecnico"></select>
+
+    <select id="fTipo">
+        <option value="">Todos</option>
+        <option>Preventiva</option>
+        <option>Corretiva</option>
+    </select>
+</div>
+
+<div class="cards" id="cards"></div>
+
+</div>
+
+<script>
+
+let dados = [];
+
+function carregar(){
+    google.script.run.withSuccessHandler(res => {
+        dados = res;
+        popularFiltros();
+        render();
+    }).getDados();
+}
+
+function popularFiltros(){
+    let municipios = [...new Set(dados.map(d=>d.municipio))];
+    let tecnicos = [...new Set(dados.map(d=>d.tecnico))];
+
+    fMunicipio.innerHTML = '<option value="">Município</option>' +
+        municipios.map(m=>`<option>${m}</option>`).join('');
+
+    fTecnico.innerHTML = '<option value="">Técnico</option>' +
+        tecnicos.map(t=>`<option>${t}</option>`).join('');
+}
+
+function render(){
+    let html = "";
+
+    let filtrado = dados.filter(d => {
+        return (!fData.value || d.data === fData.value) &&
+               (!fMunicipio.value || d.municipio === fMunicipio.value) &&
+               (!fTecnico.value || d.tecnico === fTecnico.value) &&
+               (!fTipo.value || d.tipo === fTipo.value);
+    });
+
+    filtrado.forEach(d => {
+        html += `
+        <div class="card ${d.tipo === 'Preventiva' ? 'preventiva' : 'corretiva'}">
+            
+            <div class="top">
+                <div>${d.escola}</div>
+                <div class="badge ${d.tipo === 'Preventiva' ? 'prev':'corr'}">${d.tipo}</div>
+            </div>
+
+            <p>📅 ${d.data}</p>
+            <p>📍 ${d.municipio}</p>
+            <p>👨‍🔧 ${d.tecnico}</p>
+            <p>📄 Chamado: ${d.chamado}</p>
+            <p>📝 ${d.obs}</p>
+
+        </div>
+        `;
+    });
+
+    document.getElementById("cards").innerHTML = html;
+}
+
+document.querySelectorAll("input,select").forEach(e=>{
+    e.addEventListener("change", render);
+});
+
+carregar();
+
+</script>
+
+</body>
+</html>
