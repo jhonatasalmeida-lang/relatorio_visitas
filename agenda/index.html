@@ -3,13 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Profissional</title>
+<title>Sistema de Gestão de Visitas</title>
 
 <style>
 body{margin:0;font-family:Arial;background:#f1f5f9}
+
 nav{display:flex;background:#0f172a}
 nav button{flex:1;padding:14px;border:none;background:none;color:#cbd5f5;cursor:pointer}
 nav button.active{background:#1d4ed8;color:white;font-weight:bold}
+
 .container{padding:20px}
 .hidden{display:none}
 
@@ -23,7 +25,13 @@ nav button.active{background:#1d4ed8;color:white;font-weight:bold}
 
 select,input{padding:10px;border-radius:8px;border:1px solid #ccc;margin-bottom:10px}
 
-/* PAGINAÇÃO */
+/* CALENDARIO */
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day{background:#fff;padding:10px;border-radius:8px;min-height:90px;cursor:pointer}
+.day:hover{background:#dbeafe}
+.header{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-weight:bold;margin-bottom:5px}
+
+/* PAGINACAO */
 .paginacao{display:flex;gap:5px;margin-top:10px}
 .paginacao button{padding:6px 10px;border:none;background:#e2e8f0;cursor:pointer;border-radius:6px}
 .paginacao button.active{background:#2563eb;color:#fff}
@@ -41,9 +49,14 @@ select,input{padding:10px;border-radius:8px;border:1px solid #ccc;margin-bottom:
 
 <div class="container">
 
+<!-- AGENDA RESTAURADA -->
 <div id="agenda">
-<h2>Agenda</h2>
-<div id="listaAgenda"></div>
+<h2>Calendário</h2>
+<div class="header">
+<div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+</div>
+<div id="calendar" class="calendar"></div>
+<div id="detalhes"></div>
 </div>
 
 <div id="tecnico" class="hidden">
@@ -79,7 +92,7 @@ async function carregar(){
 let r=await fetch(URL);
 dados=await r.json();
 popularFiltros();
-renderAgenda();
+montarCalendario();
 verTec();
 verEsc();
 }
@@ -101,8 +114,46 @@ return `
 </div>`;
 }
 
-function renderAgenda(){
-listaAgenda.innerHTML=dados.slice(0,20).map(card).join('');
+/* CALENDARIO ORIGINAL */
+function montarCalendario(){
+let hoje=new Date();
+let ano=hoje.getFullYear();
+let mes=hoje.getMonth();
+let primeiro=new Date(ano,mes,1).getDay();
+let ultimo=new Date(ano,mes+1,0).getDate();
+let mapa={};
+
+dados.forEach(d=>{
+mapa[d.data]=(mapa[d.data]||0)+1;
+});
+
+let html="";
+for(let i=0;i<primeiro;i++) html+="<div></div>";
+
+for(let d=1;d<=ultimo;d++){
+let dataStr=`${ano}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+html+=`<div class="day" onclick="verDia('${dataStr}')"><strong>${d}</strong><br>${mapa[dataStr]?mapa[dataStr]+" visitas":""}</div>`;
+}
+calendar.innerHTML=html;
+}
+
+function verDia(data){
+let lista=dados.filter(x=>x.data===data);
+let grupos={};
+
+lista.forEach(d=>{
+if(!grupos[d.municipio]) grupos[d.municipio]=[];
+grupos[d.municipio].push(d);
+});
+
+let html=`<h3>${data}</h3>`;
+
+Object.keys(grupos).forEach(m=>{
+html+=`<h4>📍 ${m}</h4>`;
+grupos[m].forEach(d=> html+=card(d));
+});
+
+detalhes.innerHTML=html;
 }
 
 function popularFiltros(){
@@ -120,10 +171,7 @@ selEscola.onchange=verEsc;
 function verTec(){
 let t=selTecnico.value;
 let busca=buscaTec.value.toLowerCase();
-
-let filtrado=dados.filter(d=>
-d.tecnico===t && d.escola.toLowerCase().includes(busca)
-);
+let filtrado=dados.filter(d=> d.tecnico===t && d.escola.toLowerCase().includes(busca));
 
 let totalPaginas=Math.ceil(filtrado.length/porPagina);
 let inicio=(pagina-1)*porPagina;
@@ -131,12 +179,8 @@ let fim=inicio+porPagina;
 
 listaTec.innerHTML=filtrado.slice(inicio,fim).map(card).join('');
 
-renderPaginacao(totalPaginas);
-}
-
-function renderPaginacao(total){
 let html='';
-for(let i=1;i<=total;i++){
+for(let i=1;i<=totalPaginas;i++){
 html+=`<button onclick="pagina=${i};verTec()" class="${i===pagina?'active':''}">${i}</button>`;
 }
 paginacaoTec.innerHTML=html;
