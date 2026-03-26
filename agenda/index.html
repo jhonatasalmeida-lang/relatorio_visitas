@@ -2,28 +2,37 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Painel de Visitas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Painel de Visitas Técnicas</title>
 
 <style>
+
 body{
-    font-family: 'Segoe UI';
-    background:#f0f2f5;
     margin:0;
+    font-family: 'Segoe UI', Arial;
+    background:#f1f5f9;
 }
 
+/* HEADER */
 header{
-    background:#1e3a8a;
+    background:linear-gradient(135deg,#1e3a8a,#2563eb);
     color:white;
     padding:20px;
     text-align:center;
     font-size:22px;
     font-weight:bold;
+    letter-spacing:1px;
 }
 
+/* CONTAINER */
 .container{
     padding:20px;
+    max-width:1200px;
+    margin:auto;
 }
 
+/* FILTROS */
 .filtros{
     display:flex;
     flex-wrap:wrap;
@@ -31,15 +40,17 @@ header{
     margin-bottom:20px;
 }
 
-select,input{
+.filtros input, .filtros select{
     padding:10px;
     border-radius:8px;
     border:1px solid #ccc;
+    font-size:14px;
 }
 
+/* CARDS */
 .cards{
     display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(300px,1fr));
+    grid-template-columns:repeat(auto-fill, minmax(280px,1fr));
     gap:15px;
 }
 
@@ -66,7 +77,8 @@ select,input{
 .top{
     display:flex;
     justify-content:space-between;
-    font-weight:bold;
+    align-items:center;
+    margin-bottom:8px;
 }
 
 .badge{
@@ -78,6 +90,13 @@ select,input{
 
 .prev{background:#16a34a;}
 .corr{background:#dc2626;}
+
+.vazio{
+    text-align:center;
+    color:#777;
+    margin-top:50px;
+    font-size:18px;
+}
 
 </style>
 </head>
@@ -95,7 +114,7 @@ select,input{
     <select id="fTecnico"></select>
 
     <select id="fTipo">
-        <option value="">Todos</option>
+        <option value="">Todos os Tipos</option>
         <option>Preventiva</option>
         <option>Corretiva</option>
     </select>
@@ -103,32 +122,65 @@ select,input{
 
 <div class="cards" id="cards"></div>
 
+<div id="vazio" class="vazio" style="display:none;">
+    Nenhum resultado encontrado
+</div>
+
 </div>
 
 <script>
 
+const URL = "https://script.google.com/macros/s/AKfycbxb_UkLzOD99-4-E-1V5lvWblNKoalOk3zf1tFiVZJ66E663WRwLTi_5mKyHHcv9VI/exec"; // 🔴 COLE A URL DO APPS SCRIPT AQUI
+
 let dados = [];
 
-function carregar(){
-    google.script.run.withSuccessHandler(res => {
-        dados = res;
+/* =========================
+   CARREGAR DADOS DA API
+========================= */
+async function carregar(){
+    try{
+        const res = await fetch(URL);
+        dados = await res.json();
+
         popularFiltros();
         render();
-    }).getDados();
+
+    }catch(e){
+        alert("Erro ao carregar dados");
+        console.error(e);
+    }
 }
 
+/* =========================
+   FORMATAR DATA BR
+========================= */
+function formatarDataBR(data){
+    let [ano, mes, dia] = data.split("-");
+    return `${dia}/${mes}/${ano}`;
+}
+
+/* =========================
+   FILTROS
+========================= */
 function popularFiltros(){
+
     let municipios = [...new Set(dados.map(d=>d.municipio))];
     let tecnicos = [...new Set(dados.map(d=>d.tecnico))];
 
-    fMunicipio.innerHTML = '<option value="">Município</option>' +
+    fMunicipio.innerHTML =
+        '<option value="">Município</option>' +
         municipios.map(m=>`<option>${m}</option>`).join('');
 
-    fTecnico.innerHTML = '<option value="">Técnico</option>' +
+    fTecnico.innerHTML =
+        '<option value="">Técnico</option>' +
         tecnicos.map(t=>`<option>${t}</option>`).join('');
 }
 
+/* =========================
+   RENDERIZAR CARDS
+========================= */
 function render(){
+
     let html = "";
 
     let filtrado = dados.filter(d => {
@@ -138,20 +190,33 @@ function render(){
                (!fTipo.value || d.tipo === fTipo.value);
     });
 
+    if(filtrado.length === 0){
+        document.getElementById("cards").innerHTML = "";
+        document.getElementById("vazio").style.display = "block";
+        return;
+    }
+
+    document.getElementById("vazio").style.display = "none";
+
+    filtrado.sort((a,b)=> a.data.localeCompare(b.data));
+
     filtrado.forEach(d => {
+
         html += `
         <div class="card ${d.tipo === 'Preventiva' ? 'preventiva' : 'corretiva'}">
-            
+
             <div class="top">
-                <div>${d.escola}</div>
-                <div class="badge ${d.tipo === 'Preventiva' ? 'prev':'corr'}">${d.tipo}</div>
+                <div><strong>${d.escola}</strong></div>
+                <div class="badge ${d.tipo === 'Preventiva' ? 'prev':'corr'}">
+                    ${d.tipo}
+                </div>
             </div>
 
-            <p>📅 ${d.data}</p>
+            <p>📅 ${formatarDataBR(d.data)}</p>
             <p>📍 ${d.municipio}</p>
             <p>👨‍🔧 ${d.tecnico}</p>
             <p>📄 Chamado: ${d.chamado}</p>
-            <p>📝 ${d.obs}</p>
+            <p>📝 ${d.obs || "-"}</p>
 
         </div>
         `;
@@ -160,9 +225,17 @@ function render(){
     document.getElementById("cards").innerHTML = html;
 }
 
+/* =========================
+   EVENTOS
+========================= */
 document.querySelectorAll("input,select").forEach(e=>{
     e.addEventListener("change", render);
 });
+
+/* =========================
+   AUTO ATUALIZAÇÃO (opcional)
+========================= */
+setInterval(carregar, 60000); // atualiza a cada 1 min
 
 carregar();
 
