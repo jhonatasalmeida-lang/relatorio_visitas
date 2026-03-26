@@ -1,225 +1,325 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistema de Gestão de Visitas</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Visitas</title>
+    <style>
+        :root {
+            --primary: #1d4ed8;
+            --dark: #0f172a;
+            --bg: #f1f5f9;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --text-slate: #475569;
+        }
 
-<style>
-body{margin:0;font-family:Arial;background:#f1f5f9}
-.hidden{display:none}
+        body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--dark); }
+        .hidden { display: none !important; }
 
-/* NAV */
-nav{display:flex;background:#0f172a}
-nav button{flex:1;padding:14px;border:none;background:none;color:#cbd5f5;cursor:pointer}
-nav button.active{background:#1d4ed8;color:white;font-weight:bold}
+        /* NAV */
+        nav { display: flex; background: var(--dark); position: sticky; top: 0; z-index: 100; }
+        nav button { flex: 1; padding: 16px; border: none; background: none; color: #cbd5f5; cursor: pointer; transition: 0.3s; }
+        nav button.active { background: var(--primary); color: white; font-weight: bold; }
 
-/* CONTAINER */
-.container{padding:20px}
+        .container { padding: 20px; max-width: 1200px; margin: 0 auto; }
 
-/* KPIs */
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
-.kpi{background:#fff;border-radius:12px;padding:15px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.1)}
-.kpi strong{display:block;font-size:14px}
-.kpi div{font-size:26px}
+        /* KPIs */
+        .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .kpi { background: #fff; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,.1); }
+        .kpi strong { display: block; font-size: 13px; text-transform: uppercase; color: var(--text-slate); margin-bottom: 5px; }
+        .kpi div { font-size: 28px; font-weight: bold; }
 
-/* CARDS */
-.card{background:#fff;border-radius:12px;padding:12px;margin:10px 0;box-shadow:0 2px 6px rgba(0,0,0,.1)}
-.top{display:flex;justify-content:space-between}
-.badge{padding:3px 8px;border-radius:6px;color:#fff;font-size:12px}
-.preventiva{background:#16a34a}
-.corretiva{background:#dc2626}
-.info{font-size:14px;margin-top:6px}
-.obs{font-size:13px;color:#475569;margin-top:6px}
+        /* CARDS */
+        .card { background: #fff; border-radius: 12px; padding: 16px; margin: 12px 0; box-shadow: 0 2px 4px rgba(0,0,0,.05); border-left: 5px solid #cbd5f5; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-2px); }
+        .card.Preventiva { border-left-color: var(--success); }
+        .card.Corretiva { border-left-color: var(--danger); }
+        
+        .top { display: flex; justify-content: space-between; align-items: start; }
+        .badge { padding: 4px 10px; border-radius: 20px; color: #fff; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .badge.preventiva { background: var(--success); }
+        .badge.corretiva { background: var(--danger); }
+        
+        .info { font-size: 14px; margin-top: 10px; line-height: 1.6; color: #334155; }
+        .obs { font-size: 13px; color: var(--text-slate); margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e2e8f0; }
 
-/* FORM */
-select,input,button{padding:10px;border-radius:8px;border:1px solid #ccc;margin-bottom:10px;width:100%}
-button{cursor:pointer;background:#e2e8f0}
+        /* FORM */
+        select, input, .btn-action { padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 12px; width: 100%; box-sizing: border-box; font-size: 14px; }
+        .btn-action { cursor: pointer; background: #fff; font-weight: 600; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-action:hover { background: #f8fafc; border-color: var(--primary); color: var(--primary); }
 
-/* CALENDARIO */
-.header{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-weight:bold;margin-bottom:5px}
-.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.day{background:#fff;padding:10px;border-radius:8px;min-height:90px;cursor:pointer}
-.day:hover{background:#dbeafe}
+        /* CALENDARIO */
+        .calendar-wrapper { background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,.05); }
+        .header { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: bold; padding-bottom: 10px; color: var(--text-slate); }
+        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+        .day { background: #f8fafc; padding: 10px; border-radius: 8px; min-height: 80px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
+        .day:hover { background: #eff6ff; border-color: var(--primary); }
+        .day.has-visit { background: #e0e7ff; }
+        .day strong { font-size: 14px; }
+        .visit-count { font-size: 11px; margin-top: 5px; color: var(--primary); font-weight: bold; }
 
-/* PAGINACAO */
-.paginacao{display:flex;gap:5px;flex-wrap:wrap}
-.paginacao button.active{background:#2563eb;color:#fff}
-</style>
+        /* PAGINACAO */
+        .paginacao { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; justify-content: center; }
+        .paginacao button { padding: 8px 14px; border-radius: 6px; border: 1px solid #e2e8f0; background: #fff; cursor: pointer; }
+        .paginacao button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        #loading { text-align: center; padding: 50px; font-weight: bold; color: var(--primary); }
+    </style>
 </head>
-
 <body>
 
-<nav>
-  <button class="active" data-view="agenda">Agenda</button>
-  <button data-view="tecnico">Técnico</button>
-  <button data-view="escola">Escola</button>
+<nav id="mainNav">
+    <button class="active" data-view="agenda">📅 Agenda</button>
+    <button data-view="tecnico">👨‍🔧 Técnico</button>
+    <button data-view="escola">🏫 Escola</button>
 </nav>
 
 <div class="container">
+    <div id="loading">Carregando dados...</div>
 
-  <!-- KPIs -->
-  <div class="kpis">
-    <div class="kpi"><strong>Total de Visitas</strong><div id="kpiTotal">0</div></div>
-    <div class="kpi"><strong>Preventivas</strong><div id="kpiPrev" style="color:#16a34a">0</div></div>
-    <div class="kpi"><strong>Corretivas</strong><div id="kpiCorr" style="color:#dc2626">0</div></div>
-  </div>
+    <div id="content" class="hidden">
+        <div class="kpis">
+            <div class="kpi"><strong>Total Visitas</strong><div id="kpiTotal">0</div></div>
+            <div class="kpi"><strong>Preventivas</strong><div id="kpiPrev" style="color:var(--success)">0</div></div>
+            <div class="kpi"><strong>Corretivas</strong><div id="kpiCorr" style="color:var(--danger)">0</div></div>
+        </div>
 
-  <!-- AGENDA -->
-  <section id="agenda">
-    <h2>Calendário</h2>
-    <div class="header">
-      <div>Dom</div><div>Seg</div><div>Ter</div>
-      <div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+        <section id="agenda">
+            <div class="calendar-wrapper">
+                <div class="header">
+                    <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+                </div>
+                <div id="calendar" class="calendar"></div>
+            </div>
+            <div id="detalhes" style="margin-top:20px"></div>
+        </section>
+
+        <section id="tecnico" class="hidden">
+            <select id="selTecnico"></select>
+            <input id="buscaTec" placeholder="🔍 Buscar por nome da escola...">
+            <button class="btn-action" id="btnExpTec">🧾 Exportar Relatório do Técnico</button>
+            <div id="listaTec"></div>
+            <div id="paginacaoTec" class="paginacao"></div>
+        </section>
+
+        <section id="escola" class="hidden">
+            <select id="selEscola"></select>
+            <button class="btn-action" id="btnExpEsc">🧾 Exportar Relatório da Escola</button>
+            <div id="listaEsc"></div>
+        </section>
     </div>
-    <div id="calendar" class="calendar"></div>
-    <div id="detalhes"></div>
-  </section>
-
-  <!-- TECNICO -->
-  <section id="tecnico" class="hidden">
-    <h2>Técnico</h2>
-    <select id="selTecnico"></select>
-    <input id="buscaTec" placeholder="Buscar escola...">
-    <button onclick="exportarTecnico()">🧾 Exportar Relatório do Técnico</button>
-    <div id="listaTec"></div>
-    <div id="paginacaoTec" class="paginacao"></div>
-  </section>
-
-  <!-- ESCOLA -->
-  <section id="escola" class="hidden">
-    <h2>Escola</h2>
-    <select id="selEscola"></select>
-    <button onclick="exportarEscola()">🧾 Exportar Relatório da Escola</button>
-    <div id="listaEsc"></div>
-  </section>
-
 </div>
 
 <script>
-const URL="https://script.google.com/macros/s/AKfycbyMfkc6G97ArUCvvLAOi2ySRCK0nVSo3eBOKT1himsiJ7NACRoapcKzzGI7ZLT34hM/exec";
+/** * Melhorias: 
+ * 1. Cache de elementos DOM para performance.
+ * 2. Delegação de eventos e listeners modernos.
+ * 3. Formatação de datas mais robusta.
+ */
 
-const state={dados:[],pagina:1,porPagina:8};
+const URL = "https://script.google.com/macros/s/AKfycbyMfkc6G97ArUCvvLAOi2ySRCK0nVSo3eBOKT1himsiJ7NACRoapcKzzGI7ZLT34hM/exec";
 
-/* UI */
-function card(d){
-return`
-<div class="card">
-<div class="top">
-<strong>${d.escola}</strong>
-<span class="badge ${d.tipo==='Preventiva'?'preventiva':'corretiva'}">${d.tipo}</span>
-</div>
-<div class="info">
-📅 ${d.data}<br>
-👨‍🔧 ${d.tecnico}<br>
-📍 ${d.municipio}<br>
-🆔 ${d.chamado||'-'}
-</div>
-<div class="obs">📝 ${d.observacao||'Sem observação'}</div>
-</div>`;
+const state = {
+    dados: [],
+    pagina: 1,
+    porPagina: 8
+};
+
+// Elementos frequentemente usados
+const el = {
+    loading: document.getElementById('loading'),
+    content: document.getElementById('content'),
+    calendar: document.getElementById('calendar'),
+    detalhes: document.getElementById('detalhes'),
+    selTecnico: document.getElementById('selTecnico'),
+    selEscola: document.getElementById('selEscola'),
+    listaTec: document.getElementById('listaTec'),
+    listaEsc: document.getElementById('listaEsc'),
+    paginacaoTec: document.getElementById('paginacaoTec'),
+    buscaTec: document.getElementById('buscaTec')
+};
+
+function card(d) {
+    return `
+    <div class="card ${d.tipo}">
+        <div class="top">
+            <strong>${d.escola}</strong>
+            <span class="badge ${d.tipo.toLowerCase()}">${d.tipo}</span>
+        </div>
+        <div class="info">
+            📅 <b>Data:</b> ${formatarDataBR(d.data)}<br>
+            👨‍🔧 <b>Técnico:</b> ${d.tecnico}<br>
+            📍 <b>Município:</b> ${d.municipio}<br>
+            🆔 <b>Chamado:</b> ${d.chamado || 'N/A'}
+        </div>
+        <div class="obs">📝 ${d.observacao || 'Sem observações registradas.'}</div>
+    </div>`;
 }
 
-/* NAV */
-document.querySelectorAll('nav button').forEach(b=>{
-b.onclick=()=>{
-document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));
-document.getElementById(b.dataset.view).classList.remove('hidden');
-document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
-b.classList.add('active');
-};
+function formatarDataBR(dataISO) {
+    if(!dataISO) return '-';
+    const [ano, mes, dia] = dataISO.split('-');
+    return `${dia}/${mes}/${ano}`;
+}
+
+// Navegação
+document.querySelectorAll('#mainNav button').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+        document.querySelectorAll('#mainNav button').forEach(b => b.classList.remove('active'));
+        
+        document.getElementById(btn.dataset.view).classList.remove('hidden');
+        btn.classList.add('active');
+    });
 });
 
-/* LOAD */
-async function carregar(){
-const r=await fetch(URL);
-state.dados=await r.json();
-atualizarKPIs();
-popularFiltros();
-montarCalendario();
-renderTecnico();
-renderEscola();
+async function carregar() {
+    try {
+        const r = await fetch(URL);
+        if (!r.ok) throw new Error();
+        state.dados = await r.json();
+        
+        el.loading.classList.add('hidden');
+        el.content.classList.remove('hidden');
+
+        atualizarKPIs();
+        popularFiltros();
+        montarCalendario();
+        renderTecnico();
+        renderEscola();
+    } catch (err) {
+        el.loading.innerHTML = "❌ Erro ao carregar dados. Verifique a conexão.";
+    }
 }
 
-/* KPIs */
-function atualizarKPIs(){
-kpiTotal.textContent=state.dados.length;
-kpiPrev.textContent=state.dados.filter(d=>d.tipo==='Preventiva').length;
-kpiCorr.textContent=state.dados.filter(d=>d.tipo==='Corretiva').length;
+function atualizarKPIs() {
+    document.getElementById('kpiTotal').textContent = state.dados.length;
+    document.getElementById('kpiPrev').textContent = state.dados.filter(d => d.tipo === 'Preventiva').length;
+    document.getElementById('kpiCorr').textContent = state.dados.filter(d => d.tipo === 'Corretiva').length;
 }
 
-/* CALENDARIO */
-function montarCalendario(){
-const hoje=new Date(),ano=hoje.getFullYear(),mes=hoje.getMonth();
-const primeiro=new Date(ano,mes,1).getDay();
-const ultimo=new Date(ano,mes+1,0).getDate();
-const mapa={};
-state.dados.forEach(d=>mapa[d.data]=(mapa[d.data]||0)+1);
-let html='';
-for(let i=0;i<primeiro;i++)html+='<div></div>';
-for(let d=1;d<=ultimo;d++){
-const data=`${ano}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-html+=`<div class="day" onclick="verDia('${data}')"><strong>${d}</strong><br>${mapa[data]?mapa[data]+' visitas':''}</div>`;
-}
-calendar.innerHTML=html;
+function montarCalendario() {
+    const hoje = new Date(), ano = hoje.getFullYear(), mes = hoje.getMonth();
+    const primeiroDiaSemana = new Date(ano, mes, 1).getDay();
+    const ultimoDiaMes = new Date(ano, mes + 1, 0).getDate();
+    
+    // Mapa de visitas por dia para busca rápida O(1)
+    const mapa = state.dados.reduce((acc, d) => {
+        acc[d.data] = (acc[d.data] || 0) + 1;
+        return acc;
+    }, {});
+
+    let html = '';
+    for (let i = 0; i < primeiroDiaSemana; i++) html += '<div></div>';
+    
+    for (let d = 1; d <= ultimoDiaMes; d++) {
+        const dataKey = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const qtd = mapa[dataKey] || 0;
+        const classeDia = qtd > 0 ? 'day has-visit' : 'day';
+        
+        html += `
+            <div class="${classeDia}" onclick="verDia('${dataKey}')">
+                <strong>${d}</strong>
+                ${qtd ? `<div class="visit-count">${qtd} visita(s)</div>` : ''}
+            </div>`;
+    }
+    el.calendar.innerHTML = html;
 }
 
-function verDia(data){
-const lista=state.dados.filter(d=>d.data===data);
-const grupos={};
-lista.forEach(d=>(grupos[d.municipio]??=[]).push(d));
-detalhes.innerHTML=`<h3>${data}</h3>`+
-Object.entries(grupos).map(([m,it])=>`<h4>📍 ${m}</h4>${it.map(card).join('')}`).join('');
+window.verDia = function(data) {
+    const lista = state.dados.filter(d => d.data === data);
+    if (!lista.length) return;
+
+    const grupos = {};
+    lista.forEach(d => (grupos[d.municipio] ??= []).push(d));
+
+    el.detalhes.innerHTML = `<h3>Visitas em ${formatarDataBR(data)}</h3>` +
+        Object.entries(grupos).map(([m, itens]) => `
+            <div style="margin-top:15px">
+                <span style="background:#e2e8f0; padding:4px 10px; border-radius:4px; font-weight:bold">📍 ${m}</span>
+                ${itens.map(card).join('')}
+            </div>
+        `).join('');
+    el.detalhes.scrollIntoView({ behavior: 'smooth' });
+};
+
+function popularFiltros() {
+    const tecnicos = [...new Set(state.dados.map(d => d.tecnico))].sort();
+    const escolas = [...new Set(state.dados.map(d => d.escola))].sort();
+
+    el.selTecnico.innerHTML = tecnicos.map(t => `<option value="${t}">${t}</option>`).join('');
+    el.selEscola.innerHTML = escolas.map(e => `<option value="${e}">${e}</option>`).join('');
+
+    el.selTecnico.onchange = () => { state.pagina = 1; renderTecnico(); };
+    el.buscaTec.oninput = () => { state.pagina = 1; renderTecnico(); };
+    el.selEscola.onchange = renderEscola;
 }
 
-/* FILTROS */
-function popularFiltros(){
-selTecnico.innerHTML=[...new Set(state.dados.map(d=>d.tecnico))].map(t=>`<option>${t}</option>`).join('');
-selEscola.innerHTML=[...new Set(state.dados.map(d=>d.escola))].map(e=>`<option>${e}</option>`).join('');
-selTecnico.onchange=()=>{state.pagina=1;renderTecnico()};
-buscaTec.oninput=()=>{state.pagina=1;renderTecnico()};
-selEscola.onchange=renderEscola;
+function renderTecnico() {
+    const busca = el.buscaTec.value.toLowerCase();
+    const tecnico = el.selTecnico.value;
+    
+    const filtrados = state.dados.filter(d => 
+        d.tecnico === tecnico && 
+        d.escola.toLowerCase().includes(busca)
+    );
+
+    const totalPaginas = Math.ceil(filtrados.length / state.porPagina);
+    const inicio = (state.pagina - 1) * state.porPagina;
+    
+    el.listaTec.innerHTML = filtrados.slice(inicio, inicio + state.porPagina).map(card).join('') || '<p>Nenhuma visita encontrada.</p>';
+    
+    // Paginação
+    el.paginacaoTec.innerHTML = Array.from({ length: totalPaginas }, (_, i) => `
+        <button class="${i + 1 === state.pagina ? 'active' : ''}" 
+                onclick="state.pagina=${i + 1}; renderTecnico()">${i + 1}</button>
+    `).join('');
 }
 
-/* TECNICO */
-function renderTecnico(){
-const lista=state.dados.filter(d=>d.tecnico===selTecnico.value&&d.escola.toLowerCase().includes(buscaTec.value.toLowerCase()));
-const ini=(state.pagina-1)*state.porPagina,fim=ini+state.porPagina;
-listaTec.innerHTML=lista.slice(ini,fim).map(card).join('');
-paginacaoTec.innerHTML=Array.from({length:Math.ceil(lista.length/state.porPagina)},(_,i)=>
-`<button class="${i+1===state.pagina?'active':''}" onclick="state.pagina=${i+1};renderTecnico()">${i+1}</button>`).join('');
+function renderEscola() {
+    const filtrados = state.dados
+        .filter(d => d.escola === el.selEscola.value)
+        .sort((a, b) => b.data.localeCompare(a.data)); // Mais recentes primeiro
+
+    el.listaEsc.innerHTML = filtrados.map(card).join('') || '<p>Nenhuma visita encontrada.</p>';
 }
 
-/* ESCOLA */
-function renderEscola(){
-listaEsc.innerHTML=state.dados.filter(d=>d.escola===selEscola.value)
-.sort((a,b)=>a.data.localeCompare(b.data)).map(card).join('');
+// Exportação
+function exportarCSV(nome, dados) {
+    if (!dados.length) return alert('Sem dados para exportar');
+    
+    const cabecalho = ['Data', 'Tipo', 'Tecnico', 'Escola', 'Municipio', 'Chamado', 'Observacao'];
+    const linhas = dados.map(d => [
+        formatarDataBR(d.data),
+        d.tipo,
+        d.tecnico,
+        d.escola,
+        d.municipio,
+        d.chamado || '',
+        (d.observacao || '').replace(/[\n;]/g, ' ')
+    ]);
+
+    const csvContent = "\uFEFF" + [cabecalho, ...linhas].map(l => l.join(';')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${nome}.csv`;
+    a.click();
 }
 
-/* EXPORT */
-function exportarCSV(nome,dados){
-if(!dados.length)return alert('Sem dados para exportar');
-const head=['Data','Tipo','Técnico','Escola','Município','Chamado','Observação'];
-const rows=dados.map(d=>[d.data,d.tipo,d.tecnico,d.escola,d.municipio,d.chamado||'',(d.observacao||'').replace(/[\n;]/g,' ')]);
-const csv='\uFEFF'+[head,...rows].map(l=>l.join(';')).join('\n');
-const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-const a=document.createElement('a');
-a.href=URL.createObjectURL(blob);
-a.download=nome;
-a.click();
-}
+document.getElementById('btnExpTec').onclick = () => {
+    const t = el.selTecnico.value;
+    exportarCSV(`relatorio_${t}`, state.dados.filter(d => d.tecnico === t));
+};
 
-function exportarTecnico(){
-exportarCSV(`relatorio_tecnico_${selTecnico.value}.csv`,
-state.dados.filter(d=>d.tecnico===selTecnico.value));
-}
-
-function exportarEscola(){
-exportarCSV(`relatorio_escola_${selEscola.value}.csv`,
-state.dados.filter(d=>d.escola===selEscola.value));
-}
+document.getElementById('btnExpEsc').onclick = () => {
+    const e = el.selEscola.value;
+    exportarCSV(`relatorio_${e}`, state.dados.filter(d => d.escola === e));
+};
 
 carregar();
 </script>
-
 </body>
 </html>
