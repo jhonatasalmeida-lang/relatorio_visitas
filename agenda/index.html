@@ -3,99 +3,86 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Painel de Visitas Técnicas</title>
+<title>Sistema de Visitas Técnicas</title>
 
 <style>
 
 body{
     margin:0;
-    font-family: 'Segoe UI', Arial;
+    font-family:Arial;
     background:#f1f5f9;
 }
 
-/* HEADER */
-header{
-    background:linear-gradient(135deg,#1e3a8a,#2563eb);
+/* MENU */
+nav{
+    background:#1e3a8a;
     color:white;
-    padding:20px;
-    text-align:center;
-    font-size:22px;
-    font-weight:bold;
-    letter-spacing:1px;
+    display:flex;
+}
+
+nav button{
+    flex:1;
+    padding:15px;
+    border:none;
+    background:none;
+    color:white;
+    cursor:pointer;
+    font-size:15px;
+}
+
+nav button.active{
+    background:#2563eb;
 }
 
 /* CONTAINER */
 .container{
     padding:20px;
-    max-width:1200px;
-    margin:auto;
 }
 
-/* FILTROS */
-.filtros{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    margin-bottom:20px;
-}
-
-.filtros input, .filtros select{
-    padding:10px;
-    border-radius:8px;
-    border:1px solid #ccc;
-    font-size:14px;
-}
+/* ESCONDER */
+.hidden{display:none}
 
 /* CARDS */
-.cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(280px,1fr));
-    gap:15px;
-}
-
 .card{
     background:white;
-    border-radius:12px;
-    padding:15px;
-    box-shadow:0 4px 10px rgba(0,0,0,0.08);
-    transition:0.2s;
+    padding:10px;
+    margin:5px 0;
+    border-radius:8px;
 }
 
-.card:hover{
-    transform:scale(1.02);
+.preventiva{border-left:5px solid green;}
+.corretiva{border-left:5px solid red;}
+
+/* CALENDÁRIO */
+.calendar{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:5px;
 }
 
-.preventiva{
-    border-left:6px solid #16a34a;
+.day{
+    background:white;
+    padding:10px;
+    border-radius:8px;
+    min-height:80px;
+    cursor:pointer;
 }
 
-.corretiva{
-    border-left:6px solid #dc2626;
+.day:hover{
+    background:#e2e8f0;
 }
 
-.top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:8px;
-}
-
-.badge{
-    padding:4px 8px;
-    border-radius:6px;
-    color:white;
+.count{
     font-size:12px;
+    color:#555;
 }
 
-.prev{background:#16a34a;}
-.corr{background:#dc2626;}
-
-.vazio{
-    text-align:center;
-    color:#777;
-    margin-top:50px;
-    font-size:18px;
+/* DASHBOARD */
+.box{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    margin-bottom:10px;
 }
 
 </style>
@@ -103,139 +90,148 @@ header{
 
 <body>
 
-<header>Painel de Visitas Técnicas</header>
+<nav>
+    <button onclick="trocar('agenda')" class="active">📅 Agenda</button>
+    <button onclick="trocar('tecnicos')">👨‍🔧 Técnicos</button>
+    <button onclick="trocar('dashboard')">📊 Dashboard</button>
+</nav>
 
 <div class="container">
 
-<div class="filtros">
-    <input type="date" id="fData">
-
-    <select id="fMunicipio"></select>
-    <select id="fTecnico"></select>
-
-    <select id="fTipo">
-        <option value="">Todos os Tipos</option>
-        <option>Preventiva</option>
-        <option>Corretiva</option>
-    </select>
+<!-- AGENDA -->
+<div id="agenda">
+    <h2>Agenda Mensal</h2>
+    <div id="calendar" class="calendar"></div>
+    <div id="detalhesDia"></div>
 </div>
 
-<div class="cards" id="cards"></div>
+<!-- TECNICOS -->
+<div id="tecnicos" class="hidden">
+    <h2>Roteiro por Técnico</h2>
+    <select id="fTecnico"></select>
+    <div id="listaTecnico"></div>
+</div>
 
-<div id="vazio" class="vazio" style="display:none;">
-    Nenhum resultado encontrado
+<!-- DASHBOARD -->
+<div id="dashboard" class="hidden">
+    <h2>Indicadores</h2>
+    <div id="indicadores"></div>
 </div>
 
 </div>
 
 <script>
 
-const URL = "https://script.google.com/macros/s/AKfycbzSnemMI0Rqo3GK67Dm4lwoOaep56hsm4pVqZ6AOeh64oGxSER3r4keZXcYjZmO59s/exec"; // 🔴 COLE A URL DO APPS SCRIPT AQUI
+const URL = "https://script.google.com/macros/s/AKfycbzSnemMI0Rqo3GK67Dm4lwoOaep56hsm4pVqZ6AOeh64oGxSER3r4keZXcYjZmO59s/exec";
 
 let dados = [];
 
-/* =========================
-   CARREGAR DADOS DA API
-========================= */
+/* TROCAR TELA */
+function trocar(tela){
+    document.querySelectorAll(".container > div").forEach(d=>d.classList.add("hidden"));
+    document.getElementById(tela).classList.remove("hidden");
+
+    document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+    event.target.classList.add("active");
+}
+
+/* CARREGAR DADOS */
 async function carregar(){
-    try{
-        const res = await fetch(URL);
-        dados = await res.json();
+    const res = await fetch(URL);
+    dados = await res.json();
 
-        popularFiltros();
-        render();
-
-    }catch(e){
-        alert("Erro ao carregar dados");
-        console.error(e);
-    }
+    montarCalendario();
+    popularTecnicos();
+    montarDashboard();
 }
 
-/* =========================
-   FORMATAR DATA BR
-========================= */
-function formatarDataBR(data){
-    let [ano, mes, dia] = data.split("-");
-    return `${dia}/${mes}/${ano}`;
-}
+/* CALENDÁRIO */
+function montarCalendario(){
 
-/* =========================
-   FILTROS
-========================= */
-function popularFiltros(){
+    let map = {};
 
-    let municipios = [...new Set(dados.map(d=>d.municipio))];
-    let tecnicos = [...new Set(dados.map(d=>d.tecnico))];
-
-    fMunicipio.innerHTML =
-        '<option value="">Município</option>' +
-        municipios.map(m=>`<option>${m}</option>`).join('');
-
-    fTecnico.innerHTML =
-        '<option value="">Técnico</option>' +
-        tecnicos.map(t=>`<option>${t}</option>`).join('');
-}
-
-/* =========================
-   RENDERIZAR CARDS
-========================= */
-function render(){
+    dados.forEach(d=>{
+        if(!map[d.data]) map[d.data]=0;
+        map[d.data]++;
+    });
 
     let html = "";
 
-    let filtrado = dados.filter(d => {
-        return (!fData.value || d.data === fData.value) &&
-               (!fMunicipio.value || d.municipio === fMunicipio.value) &&
-               (!fTecnico.value || d.tecnico === fTecnico.value) &&
-               (!fTipo.value || d.tipo === fTipo.value);
-    });
-
-    if(filtrado.length === 0){
-        document.getElementById("cards").innerHTML = "";
-        document.getElementById("vazio").style.display = "block";
-        return;
-    }
-
-    document.getElementById("vazio").style.display = "none";
-
-    filtrado.sort((a,b)=> a.data.localeCompare(b.data));
-
-    filtrado.forEach(d => {
-
+    Object.keys(map).sort().forEach(data=>{
         html += `
-        <div class="card ${d.tipo === 'Preventiva' ? 'preventiva' : 'corretiva'}">
-
-            <div class="top">
-                <div><strong>${d.escola}</strong></div>
-                <div class="badge ${d.tipo === 'Preventiva' ? 'prev':'corr'}">
-                    ${d.tipo}
-                </div>
-            </div>
-
-            <p>📅 ${formatarDataBR(d.data)}</p>
-            <p>📍 ${d.municipio}</p>
-            <p>👨‍🔧 ${d.tecnico}</p>
-            <p>📄 Chamado: ${d.chamado}</p>
-            <p>📝 ${d.obs || "-"}</p>
-
-        </div>
-        `;
+        <div class="day" onclick="verDia('${data}')">
+            <strong>${data.split("-")[2]}</strong>
+            <div class="count">${map[data]} visitas</div>
+        </div>`;
     });
 
-    document.getElementById("cards").innerHTML = html;
+    document.getElementById("calendar").innerHTML = html;
 }
 
-/* =========================
-   EVENTOS
-========================= */
-document.querySelectorAll("input,select").forEach(e=>{
-    e.addEventListener("change", render);
-});
+/* DETALHE DO DIA */
+function verDia(data){
 
-/* =========================
-   AUTO ATUALIZAÇÃO (opcional)
-========================= */
-setInterval(carregar, 60000); // atualiza a cada 1 min
+    let lista = dados.filter(d=>d.data===data);
+
+    let html = `<h3>📅 ${data}</h3>`;
+
+    lista.forEach(d=>{
+        html += `
+        <div class="card ${d.tipo==='Preventiva'?'preventiva':'corretiva'}">
+            <strong>${d.escola}</strong><br>
+            👨‍🔧 ${d.tecnico}<br>
+            📍 ${d.municipio}
+        </div>`;
+    });
+
+    document.getElementById("detalhesDia").innerHTML = html;
+}
+
+/* TÉCNICOS */
+function popularTecnicos(){
+
+    let tecnicos = [...new Set(dados.map(d=>d.tecnico))];
+
+    fTecnico.innerHTML = tecnicos.map(t=>`<option>${t}</option>`).join("");
+
+    fTecnico.addEventListener("change", verTecnico);
+}
+
+/* VER TÉCNICO */
+function verTecnico(){
+
+    let t = fTecnico.value;
+
+    let lista = dados.filter(d=>d.tecnico===t);
+
+    let html = "";
+
+    lista.sort((a,b)=>a.data.localeCompare(b.data));
+
+    lista.forEach(d=>{
+        html += `
+        <div class="card">
+            📅 ${d.data} - ${d.escola}
+        </div>`;
+    });
+
+    document.getElementById("listaTecnico").innerHTML = html;
+}
+
+/* DASHBOARD */
+function montarDashboard(){
+
+    let total = dados.length;
+
+    let preventiva = dados.filter(d=>d.tipo==="Preventiva").length;
+    let corretiva = dados.filter(d=>d.tipo==="Corretiva").length;
+
+    document.getElementById("indicadores").innerHTML = `
+        <div class="box">Total de visitas: ${total}</div>
+        <div class="box">Preventivas: ${preventiva}</div>
+        <div class="box">Corretivas: ${corretiva}</div>
+    `;
+}
 
 carregar();
 
