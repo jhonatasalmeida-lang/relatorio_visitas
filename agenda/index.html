@@ -6,193 +6,330 @@
 <title>Sistema de Gestão de Visitas</title>
 
 <style>
-body{margin:0;font-family:Arial;background:#f1f5f9}
+/* =======================
+   BASE
+======================= */
+body {
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f1f5f9;
+}
 
-nav{display:flex;background:#0f172a}
-nav button{flex:1;padding:14px;border:none;background:none;color:#cbd5f5;cursor:pointer}
-nav button.active{background:#1d4ed8;color:white;font-weight:bold}
+.hidden { display:none }
 
-.container{padding:20px}
-.hidden{display:none}
+/* =======================
+   NAVEGAÇÃO
+======================= */
+nav {
+  display:flex;
+  background:#0f172a;
+}
+nav button {
+  flex:1;
+  padding:14px;
+  border:none;
+  background:none;
+  color:#cbd5f5;
+  cursor:pointer;
+}
+nav button.active {
+  background:#1d4ed8;
+  color:white;
+  font-weight:bold;
+}
 
-.card{background:#fff;border-radius:12px;padding:12px;margin:10px 0;box-shadow:0 2px 6px rgba(0,0,0,.1)}
-.top{display:flex;justify-content:space-between}
-.badge{padding:3px 8px;border-radius:6px;color:#fff;font-size:12px}
-.preventiva{background:#16a34a}
-.corretiva{background:#dc2626}
-.info{font-size:14px;margin-top:6px}
-.obs{font-size:13px;color:#475569;margin-top:6px}
+/* =======================
+   CONTAINER
+======================= */
+.container {
+  padding:20px;
+}
 
-select,input{padding:10px;border-radius:8px;border:1px solid #ccc;margin-bottom:10px}
+/* =======================
+   CARDS
+======================= */
+.card {
+  background:#fff;
+  border-radius:12px;
+  padding:12px;
+  margin:10px 0;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+.top {
+  display:flex;
+  justify-content:space-between;
+}
+.badge {
+  padding:3px 8px;
+  border-radius:6px;
+  color:#fff;
+  font-size:12px;
+}
+.preventiva { background:#16a34a }
+.corretiva { background:#dc2626 }
 
-/* CALENDARIO */
-.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.day{background:#fff;padding:10px;border-radius:8px;min-height:90px;cursor:pointer}
-.day:hover{background:#dbeafe}
-.header{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-weight:bold;margin-bottom:5px}
+.info {
+  font-size:14px;
+  margin-top:6px;
+}
+.obs {
+  font-size:13px;
+  color:#475569;
+  margin-top:6px;
+}
 
-/* PAGINACAO */
-.paginacao{display:flex;gap:5px;margin-top:10px}
-.paginacao button{padding:6px 10px;border:none;background:#e2e8f0;cursor:pointer;border-radius:6px}
-.paginacao button.active{background:#2563eb;color:#fff}
+/* =======================
+   FORMULÁRIOS
+======================= */
+select, input {
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  margin-bottom:10px;
+  width:100%;
+}
 
+/* =======================
+   CALENDÁRIO
+======================= */
+.header {
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  text-align:center;
+  font-weight:bold;
+  margin-bottom:5px;
+}
+.calendar {
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px;
+}
+.day {
+  background:#fff;
+  padding:10px;
+  border-radius:8px;
+  min-height:90px;
+  cursor:pointer;
+}
+.day:hover {
+  background:#dbeafe;
+}
+
+/* =======================
+   PAGINAÇÃO
+======================= */
+.paginacao {
+  display:flex;
+  gap:5px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+.paginacao button {
+  padding:6px 10px;
+  border:none;
+  background:#e2e8f0;
+  cursor:pointer;
+  border-radius:6px;
+}
+.paginacao button.active {
+  background:#2563eb;
+  color:#fff;
+}
 </style>
 </head>
 
 <body>
 
 <nav>
-<button onclick="trocar('agenda',this)" class="active">Agenda</button>
-<button onclick="trocar('tecnico',this)">Técnico</button>
-<button onclick="trocar('escola',this)">Escola</button>
+  <button class="active" data-view="agenda">Agenda</button>
+  <button data-view="tecnico">Técnico</button>
+  <button data-view="escola">Escola</button>
 </nav>
 
 <div class="container">
 
-<!-- AGENDA RESTAURADA -->
-<div id="agenda">
-<h2>Calendário</h2>
-<div class="header">
-<div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
-</div>
-<div id="calendar" class="calendar"></div>
-<div id="detalhes"></div>
-</div>
+  <!-- AGENDA -->
+  <section id="agenda">
+    <h2>Calendário</h2>
+    <div class="header">
+      <div>Dom</div><div>Seg</div><div>Ter</div>
+      <div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+    </div>
+    <div id="calendar" class="calendar"></div>
+    <div id="detalhes"></div>
+  </section>
 
-<div id="tecnico" class="hidden">
-<h2>Técnico</h2>
-<select id="selTecnico"></select>
-<input type="text" id="buscaTec" placeholder="Buscar escola...">
-<div id="listaTec"></div>
-<div id="paginacaoTec" class="paginacao"></div>
-</div>
+  <!-- TÉCNICO -->
+  <section id="tecnico" class="hidden">
+    <h2>Técnico</h2>
+    <select id="selTecnico"></select>
+    <input id="buscaTec" placeholder="Buscar escola...">
+    <div id="listaTec"></div>
+    <div id="paginacaoTec" class="paginacao"></div>
+  </section>
 
-<div id="escola" class="hidden">
-<h2>Escola</h2>
-<select id="selEscola"></select>
-<div id="listaEsc"></div>
-</div>
+  <!-- ESCOLA -->
+  <section id="escola" class="hidden">
+    <h2>Escola</h2>
+    <select id="selEscola"></select>
+    <div id="listaEsc"></div>
+  </section>
 
 </div>
 
 <script>
-const URL="https://script.google.com/macros/s/AKfycbyMfkc6G97ArUCvvLAOi2ySRCK0nVSo3eBOKT1himsiJ7NACRoapcKzzGI7ZLT34hM/exec";
-let dados=[];
-let pagina=1;
-const porPagina=8;
+/* =======================
+   CONFIGURAÇÃO
+======================= */
+const URL = "https://script.google.com/macros/s/AKfycbyMfkc6G97ArUCvvLAOi2ySRCK0nVSo3eBOKT1himsiJ7NACRoapcKzzGI7ZLT34hM/exec";
 
-function trocar(id,el){
-document.querySelectorAll('.container > div').forEach(d=>d.classList.add('hidden'));
-document.getElementById(id).classList.remove('hidden');
-document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-el.classList.add('active');
+const state = {
+  dados: [],
+  pagina: 1,
+  porPagina: 8
+};
+
+/* =======================
+   UI HELPERS
+======================= */
+function card(d) {
+  return `
+    <div class="card">
+      <div class="top">
+        <strong>${d.escola}</strong>
+        <span class="badge ${d.tipo === 'Preventiva' ? 'preventiva' : 'corretiva'}">
+          ${d.tipo}
+        </span>
+      </div>
+      <div class="info">
+        📅 ${d.data}<br>
+        👨‍🔧 ${d.tecnico}<br>
+        📍 ${d.municipio}<br>
+        🆔 ${d.chamado || '-'}
+      </div>
+      <div class="obs">
+        📝 ${d.observacao || 'Sem observação'}
+      </div>
+    </div>
+  `;
 }
 
-async function carregar(){
-let r=await fetch(URL);
-dados=await r.json();
-popularFiltros();
-montarCalendario();
-verTec();
-verEsc();
-}
-
-function card(d){
-return `
-<div class="card">
-<div class="top">
-<strong>${d.escola}</strong>
-<span class="badge ${d.tipo==='Preventiva'?'preventiva':'corretiva'}">${d.tipo}</span>
-</div>
-<div class="info">
-📅 ${d.data}<br>
-👨‍🔧 ${d.tecnico}<br>
-📍 ${d.municipio}<br>
-🆔 ${d.chamado||'-'}
-</div>
-<div class="obs">📝 ${d.observacao||'Sem observação'}</div>
-</div>`;
-}
-
-/* CALENDARIO ORIGINAL */
-function montarCalendario(){
-let hoje=new Date();
-let ano=hoje.getFullYear();
-let mes=hoje.getMonth();
-let primeiro=new Date(ano,mes,1).getDay();
-let ultimo=new Date(ano,mes+1,0).getDate();
-let mapa={};
-
-dados.forEach(d=>{
-mapa[d.data]=(mapa[d.data]||0)+1;
+/* =======================
+   NAVEGAÇÃO
+======================= */
+document.querySelectorAll('nav button').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+    document.getElementById(btn.dataset.view).classList.remove('hidden');
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  };
 });
 
-let html="";
-for(let i=0;i<primeiro;i++) html+="<div></div>";
-
-for(let d=1;d<=ultimo;d++){
-let dataStr=`${ano}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-html+=`<div class="day" onclick="verDia('${dataStr}')"><strong>${d}</strong><br>${mapa[dataStr]?mapa[dataStr]+" visitas":""}</div>`;
-}
-calendar.innerHTML=html;
-}
-
-function verDia(data){
-let lista=dados.filter(x=>x.data===data);
-let grupos={};
-
-lista.forEach(d=>{
-if(!grupos[d.municipio]) grupos[d.municipio]=[];
-grupos[d.municipio].push(d);
-});
-
-let html=`<h3>${data}</h3>`;
-
-Object.keys(grupos).forEach(m=>{
-html+=`<h4>📍 ${m}</h4>`;
-grupos[m].forEach(d=> html+=card(d));
-});
-
-detalhes.innerHTML=html;
+/* =======================
+   CARREGAMENTO
+======================= */
+async function carregar() {
+  const r = await fetch(URL);
+  state.dados = await r.json();
+  popularFiltros();
+  montarCalendario();
+  renderTecnico();
+  renderEscola();
 }
 
-function popularFiltros(){
-let tecnicos=[...new Set(dados.map(d=>d.tecnico))];
-let escolas=[...new Set(dados.map(d=>d.escola))];
+/* =======================
+   CALENDÁRIO
+======================= */
+function montarCalendario() {
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = hoje.getMonth();
 
-selTecnico.innerHTML=tecnicos.map(t=>`<option>${t}</option>`).join('');
-selEscola.innerHTML=escolas.map(e=>`<option>${e}</option>`).join('');
+  const primeiro = new Date(ano, mes, 1).getDay();
+  const ultimo = new Date(ano, mes + 1, 0).getDate();
 
-selTecnico.onchange=()=>{pagina=1;verTec()};
-buscaTec.oninput=()=>{pagina=1;verTec()};
-selEscola.onchange=verEsc;
+  const mapa = {};
+  state.dados.forEach(d => mapa[d.data] = (mapa[d.data] || 0) + 1);
+
+  let html = '';
+  for (let i = 0; i < primeiro; i++) html += '<div></div>';
+
+  for (let d = 1; d <= ultimo; d++) {
+    const data = `${ano}-${String(mes + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    html += `
+      <div class="day" onclick="verDia('${data}')">
+        <strong>${d}</strong><br>
+        ${mapa[data] ? mapa[data] + ' visitas' : ''}
+      </div>`;
+  }
+
+  calendar.innerHTML = html;
 }
 
-function verTec(){
-let t=selTecnico.value;
-let busca=buscaTec.value.toLowerCase();
-let filtrado=dados.filter(d=> d.tecnico===t && d.escola.toLowerCase().includes(busca));
+function verDia(data) {
+  const lista = state.dados.filter(d => d.data === data);
+  const grupos = {};
 
-let totalPaginas=Math.ceil(filtrado.length/porPagina);
-let inicio=(pagina-1)*porPagina;
-let fim=inicio+porPagina;
+  lista.forEach(d => (grupos[d.municipio] ??= []).push(d));
 
-listaTec.innerHTML=filtrado.slice(inicio,fim).map(card).join('');
-
-let html='';
-for(let i=1;i<=totalPaginas;i++){
-html+=`<button onclick="pagina=${i};verTec()" class="${i===pagina?'active':''}">${i}</button>`;
-}
-paginacaoTec.innerHTML=html;
+  detalhes.innerHTML = `
+    <h3>${data}</h3>
+    ${Object.entries(grupos).map(([m, itens]) =>
+      `<h4>📍 ${m}</h4>${itens.map(card).join('')}`
+    ).join('')}
+  `;
 }
 
-function verEsc(){
-let e=selEscola.value;
-let lista=dados.filter(d=>d.escola===e);
+/* =======================
+   FILTROS
+======================= */
+function popularFiltros() {
+  selTecnico.innerHTML = [...new Set(state.dados.map(d => d.tecnico))]
+    .map(t => `<option>${t}</option>`).join('');
 
-listaEsc.innerHTML=lista
-.sort((a,b)=>a.data.localeCompare(b.data))
-.map(card).join('');
+  selEscola.innerHTML = [...new Set(state.dados.map(d => d.escola))]
+    .map(e => `<option>${e}</option>`).join('');
+
+  selTecnico.onchange = () => { state.pagina = 1; renderTecnico(); };
+  buscaTec.oninput = () => { state.pagina = 1; renderTecnico(); };
+  selEscola.onchange = renderEscola;
+}
+
+/* =======================
+   VISÃO TÉCNICO
+======================= */
+function renderTecnico() {
+  const tecnico = selTecnico.value;
+  const busca = buscaTec.value.toLowerCase();
+
+  const lista = state.dados.filter(d =>
+    d.tecnico === tecnico &&
+    d.escola.toLowerCase().includes(busca)
+  );
+
+  const inicio = (state.pagina - 1) * state.porPagina;
+  const fim = inicio + state.porPagina;
+
+  listaTec.innerHTML = lista.slice(inicio, fim).map(card).join('');
+
+  paginacaoTec.innerHTML = Array.from(
+    { length: Math.ceil(lista.length / state.porPagina) },
+    (_, i) =>
+      `<button class="${i + 1 === state.pagina ? 'active' : ''}"
+       onclick="state.pagina=${i + 1};renderTecnico()">${i + 1}</button>`
+  ).join('');
+}
+
+/* =======================
+   VISÃO ESCOLA
+======================= */
+function renderEscola() {
+  listaEsc.innerHTML = state.dados
+    .filter(d => d.escola === selEscola.value)
+    .sort((a,b) => a.data.localeCompare(b.data))
+    .map(card)
+    .join('');
 }
 
 carregar();
@@ -200,3 +337,4 @@ carregar();
 
 </body>
 </html>
+``
