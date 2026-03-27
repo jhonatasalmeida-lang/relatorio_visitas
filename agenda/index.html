@@ -54,27 +54,36 @@
         .kpi-label { color: var(--text-dim); font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
         .kpi-value { font-size: 1.8rem; font-weight: 800; display: block; margin-top: 5px; }
 
-        /* Ajuste para separar os grupos de KPIs */
-        .kpi-container { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+/* Ajuste fino para grupos de tamanhos diferentes */
+        .kpi-container { 
+            display: flex; 
+            gap: 1rem; 
+            margin-bottom: 1.5rem; 
+            flex-wrap: wrap; 
+            align-items: stretch; 
+        }
         .kpi-group { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
-            gap: 1rem; 
-            flex: 1; 
-            padding: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+            gap: 0.8rem; 
+            padding: 12px;
             border-radius: 24px;
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border);
+            flex: 1; /* Faz os grupos crescerem proporcionalmente */
         }
+        /* O grupo do Total não precisa ser tão largo quanto os outros */
+        .kpi-group:first-child { flex: 0.5; min-width: 150px; } 
+
         .group-title { 
             grid-column: 1 / -1; 
-            font-size: 0.65rem; 
+            font-size: 0.6rem; 
             font-weight: 900; 
             color: var(--text-dim); 
             text-transform: uppercase; 
-            letter-spacing: 2px;
-            margin-bottom: -5px;
-            margin-left: 5px;
+            letter-spacing: 1.5px;
+            margin-bottom: 2px;
+            opacity: 0.8;
         }
 
         /* CALENDÁRIO */
@@ -135,24 +144,23 @@
 <div class="container-fluid">
     
 <div class="kpi-container">
-
-        <div class="kpi-group">
-            <div class="group-title">Total de Chamados</div>
-            <div class="kpi-card" style="border-left-color: var(--accent)"><span class="kpi-label">Total</span><span class="kpi-value" id="k-tot">0</span></div>
-        </div>
-    
-        <div class="kpi-group">
-            <div class="group-title">Status dos Chamados</div>
-            <div class="kpi-card" style="border-left-color: var(--warning)"><span class="kpi-label">Agendadas</span><span class="kpi-value" id="k-age" style="color:var(--warning)">0</span></div>
-            <div class="kpi-card" style="border-left-color: var(--success)"><span class="kpi-label">Concluídas</span><span class="kpi-value" id="k-con" style="color:var(--success)">0</span></div>
-        </div>
-
-        <div class="kpi-group">
-            <div class="group-title">Tipo de Atendimento</div>
-            <div class="kpi-card" style="border-left-color: var(--purple)"><span class="kpi-label">Preventivas</span><span class="kpi-value" id="k-pre" style="color:var(--purple)">0</span></div>
-            <div class="kpi-card" style="border-left-color: var(--danger)"><span class="kpi-label">Corretivas</span><span class="kpi-value" id="k-cor" style="color:var(--danger)">0</span></div>
-        </div>
+    <div class="kpi-group">
+        <div class="group-title">Visão Geral</div>
+        <div class="kpi-card" style="border-left-color: var(--accent)"><span class="kpi-label">Total</span><span class="kpi-value" id="k-tot">0</span></div>
     </div>
+
+    <div class="kpi-group">
+        <div class="group-title">Status dos Chamados</div>
+        <div class="kpi-card" style="border-left-color: var(--warning)"><span class="kpi-label">Agendadas</span><span class="kpi-value" id="k-age" style="color:var(--warning)">0</span></div>
+        <div class="kpi-card" style="border-left-color: var(--success)"><span class="kpi-label">Concluídas</span><span class="kpi-value" id="k-con" style="color:var(--success)">0</span></div>
+    </div>
+
+    <div class="kpi-group">
+        <div class="group-title">Tipo de Atendimento</div>
+        <div class="kpi-card" style="border-left-color: var(--purple)"><span class="kpi-label">Preventivas</span><span class="kpi-value" id="k-pre" style="color:var(--purple)">0</span></div>
+        <div class="kpi-card" style="border-left-color: var(--danger)"><span class="kpi-label">Corretivas</span><span class="kpi-value" id="k-cor" style="color:var(--danger)">0</span></div>
+    </div>
+</div>
 
     <section id="agenda" class="tabs">
         <div class="main-grid">
