@@ -3,130 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestão de Visitas - v3.2</title>
+    <title>Gestão de Visitas Pro - v4.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #2563eb;
-            --dark: #0f172a;
-            --bg-body: #f1f5f9;
-            --bg-card: #ffffff;
-            --border: #e2e8f0;
-            --success: #16a34a; /* Concluída / Preventiva */
-            --danger: #dc2626;  /* Corretiva */
-            --warning: #f59e0b; /* Agendada */
-            --text-main: #334155;
-            --text-muted: #64748b;
+            --bg-dark: #0f172a;       /* Azul Marinho Fundo */
+            --bg-card: #1e293b;       /* Azul Marinho Card */
+            --primary: #38bdf8;       /* Azul Celeste (Destaque) */
+            --border: #334155;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --success: #22c55e;       /* Concluída */
+            --danger: #ef4444;        /* Corretiva */
+            --warning: #f59e0b;       /* Agendada */
+            --font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg-body); color: var(--text-main); font-size: 14px; }
+        body { 
+            margin: 0; 
+            font-family: var(--font-family); 
+            background: var(--bg-dark); 
+            color: var(--text-main); 
+            font-size: 14px; 
+            line-height: 1.5;
+        }
         .hidden { display: none !important; }
 
-        /* NAVEGAÇÃO */
-        nav { background: var(--dark); padding: 10px 0; position: sticky; top: 0; z-index: 1000; }
-        nav .nav-container { display: flex; gap: 10px; margin: 0 auto; max-width: 1300px; padding: 0 20px; }
-        nav button { padding: 10px 20px; border: none; background: none; color: #cbd5f5; cursor: pointer; border-radius: 8px; transition: 0.2s; }
-        nav button.active { background: var(--primary); color: white; font-weight: bold; }
-
-        .dashboard { padding: 25px; max-width: 1300px; margin: 0 auto; }
-
-        /* KPIs */
-        .kpis-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; }
-        .kpi-card { background: var(--bg-card); border-radius: 12px; padding: 15px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .kpi-card strong { display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
-        .kpi-card .value { font-size: 24px; font-weight: 700; margin-top: 5px; }
-
-        /* CARDS DE VISITA */
-        .v-card { 
-            background: #fff; border-radius: 12px; padding: 15px; margin-bottom: 12px; 
-            border: 1px solid var(--border); border-left: 6px solid #ccc; position: relative;
+        /* --- NAVEGAÇÃO --- */
+        nav { 
+            background: rgba(15, 23, 42, 0.8); 
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 0; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
         }
-        /* Cor da borda baseada no TIPO */
+        nav .nav-container { display: flex; gap: 15px; margin: 0 auto; max-width: 1200px; padding: 0 20px; }
+        nav button { 
+            padding: 10px 24px; border: 1px solid transparent; background: transparent; 
+            color: var(--text-muted); cursor: pointer; border-radius: 12px; font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        nav button:hover { color: var(--primary); background: rgba(56, 189, 248, 0.1); }
+        nav button.active { 
+            background: var(--primary); 
+            color: var(--bg-dark); 
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        .dashboard { padding: 30px 20px; max-width: 1200px; margin: 0 auto; }
+
+        /* --- KPIs --- */
+        .kpis-row { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 20px; 
+            margin-bottom: 30px; 
+        }
+        .kpi-card { 
+            background: var(--bg-card); 
+            border-radius: 16px; 
+            padding: 20px; 
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+        .kpi-card:hover { transform: translateY(-3px); }
+        .kpi-card strong { display: block; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .kpi-card .value { font-size: 32px; font-weight: 800; margin-top: 8px; color: #fff; }
+
+        /* --- CARDS DE VISITA --- */
+        .v-card { 
+            background: var(--bg-card); 
+            border-radius: 16px; 
+            padding: 18px; 
+            margin-bottom: 15px; 
+            border: 1px solid var(--border);
+            border-left: 5px solid #64748b;
+            transition: all 0.3s;
+        }
+        .v-card:hover { border-color: var(--primary); background: #26334d; }
         .v-card.Preventiva { border-left-color: var(--success); }
         .v-card.Corretiva { border-left-color: var(--danger); }
 
-        /* Badge baseada no STATUS */
-        .status-pill {
-            font-size: 10px; padding: 3px 8px; border-radius: 20px; font-weight: bold; text-transform: uppercase;
+        .status-badge {
+            font-size: 11px; padding: 4px 10px; border-radius: 8px; font-weight: 700; text-transform: uppercase;
         }
-        .status-agendada { background: #fef3c7; color: #92400e; }
-        .status-concluida { background: #dcfce7; color: #166534; }
+        .st-agendada { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); }
+        .st-concluida { background: rgba(34, 197, 94, 0.2); color: var(--success); border: 1px solid var(--success); }
 
-        .obs-tag { background: #f8fafc; padding: 8px; border-radius: 8px; margin-top: 10px; font-size: 12px; border-left: 3px solid #cbd5f5; }
+        .obs-tag { 
+            background: rgba(15, 23, 42, 0.4); 
+            padding: 12px; border-radius: 12px; margin-top: 15px; 
+            font-size: 13px; color: var(--text-muted); border: 1px dashed var(--border);
+        }
 
-        /* GRID E LAYOUT */
-        .content-layout { display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 20px; }
-        .content-card { background: var(--bg-card); border-radius: 16px; padding: 20px; border: 1px solid var(--border); }
-        
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 10px; }
-        .day { background: var(--bg-body); min-height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
-        .day.has-visit { border: 1px solid #cbd5f5; font-weight: bold; }
-        .visit-dot { position: absolute; top: 4px; right: 4px; background: var(--primary); color: white; font-size: 9px; padding: 2px 5px; border-radius: 10px; }
+        /* --- CALENDÁRIO --- */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px; }
+        .day { 
+            background: var(--bg-card); aspect-ratio: 1/1; border-radius: 12px; 
+            display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; position: relative; border: 1px solid var(--border);
+            font-weight: 500; transition: 0.2s;
+        }
+        .day:hover:not(.empty) { border-color: var(--primary); background: #2d3a4f; }
+        .day.has-visit { background: rgba(56, 189, 248, 0.1); color: var(--primary); font-weight: bold; border-color: var(--primary); }
+        .day.selected { background: var(--primary) !important; color: var(--bg-dark) !important; }
+        .visit-dot { 
+            position: absolute; top: 6px; right: 6px; background: var(--primary); 
+            color: var(--bg-dark); font-size: 10px; width: 18px; height: 18px; 
+            display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 800;
+        }
 
-        .controls-row { display: grid; grid-template-columns: 1fr 1.5fr auto; gap: 10px; margin-bottom: 20px; }
-        select, input { padding: 12px; border-radius: 8px; border: 1px solid var(--border); }
+        /* --- FORMULÁRIOS --- */
+        .controls-row { display: grid; grid-template-columns: 1.5fr 2fr auto; gap: 15px; margin-bottom: 25px; }
+        select, input { 
+            padding: 14px; border-radius: 12px; border: 1px solid var(--border); 
+            background: var(--bg-card); color: white; outline: none; transition: 0.3s;
+        }
+        select:focus, input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
 
-        #loading { text-align: center; padding: 100px; font-weight: bold; color: var(--primary); }
+        .btn-action {
+            background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border);
+            padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600;
+        }
+        .btn-action:hover { background: var(--border); }
+
+        #loading { text-align: center; padding: 100px; font-size: 20px; letter-spacing: 2px; color: var(--primary); }
+
+        @media (max-width: 768px) {
+            .content-layout { grid-template-columns: 1fr; }
+            .controls-row { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
 <nav>
     <div class="nav-container">
-        <button class="active" data-view="agenda">📅 Agenda</button>
-        <button data-view="tecnico">👨‍🔧 Técnico</button>
-        <button data-view="escola">🏫 Escola</button>
+        <button class="active" data-view="agenda">📅 AGENDA</button>
+        <button data-view="tecnico">👨‍🔧 TÉCNICOS</button>
+        <button data-view="escola">🏫 ESCOLAS</button>
     </div>
 </nav>
 
 <div class="dashboard">
-    <div id="loading">Sincronizando dados ativos...</div>
+    <div id="loading">CARREGANDO...</div>
 
     <div id="content" class="hidden">
         <div class="kpis-row">
-            <div class="kpi-card"><strong>Total Ativas</strong><div class="value" id="kpiTotal">0</div></div>
-            <div class="kpi-card"><strong>Preventivas</strong><div class="value" id="kpiPrev" style="color: var(--success)">0</div></div>
-            <div class="kpi-card"><strong>Corretivas</strong><div class="value" id="kpiCorr" style="color: var(--danger)">0</div></div>
+            <div class="kpi-card"><strong>Total Geral</strong><div class="value" id="kpiTotal">0</div></div>
             <div class="kpi-card"><strong>Agendadas</strong><div class="value" id="kpiAgend" style="color: var(--warning)">0</div></div>
+            <div class="kpi-card"><strong>Concluídas</strong><div class="value" id="kpiConcl" style="color: var(--success)">0</div></div>
+            <div class="kpi-card"><strong>Corretivas</strong><div class="value" id="kpiCorr" style="color: var(--danger)">0</div></div>
         </div>
 
         <section id="agenda">
-            <div class="content-layout">
-                <div class="content-card">
-                    <div style="display:flex; justify-content:space-between; align-items:center">
-                        <button onclick="navegarMes(-1)">◀</button>
-                        <h3 id="currentMonthYear"></h3>
-                        <button onclick="navegarMes(1)">▶</button>
+            <div style="display: grid; grid-template-columns: 1.6fr 1.4fr; gap: 25px;" class="content-layout">
+                <div class="kpi-card" style="margin:0">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+                        <button class="btn-action" onclick="navegarMes(-1)">◀</button>
+                        <h3 id="currentMonthYear" style="margin:0; color: var(--primary)"></h3>
+                        <button class="btn-action" onclick="navegarMes(1)">▶</button>
                     </div>
                     <div class="calendar-grid" id="calendar"></div>
-                    <div id="detailsPanel" class="hidden" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px">
-                        <h4 id="selectedDateTitle"></h4>
+                    
+                    <div id="detailsPanel" class="hidden" style="margin-top:30px; border-top:1px solid var(--border); padding-top:20px">
+                        <h4 id="selectedDateTitle" style="color: var(--primary); margin-bottom:20px"></h4>
                         <div id="selectedVisitsList"></div>
                     </div>
                 </div>
-                <div class="content-card">
-                    <h4>Distribuição por Técnico</h4>
-                    <div style="height: 300px;"><canvas id="performanceChart"></canvas></div>
+                <div class="kpi-card" style="margin:0">
+                    <h4 style="margin-top:0">Produtividade por Técnico</h4>
+                    <div style="height: 350px;"><canvas id="performanceChart"></canvas></div>
                 </div>
             </div>
         </section>
 
         <section id="tecnico" class="hidden">
-            <div class="content-card">
+            <div class="kpi-card">
                 <div class="controls-row">
                     <select id="selTecnico"></select>
-                    <input id="buscaTec" placeholder="Filtrar escola...">
-                    <button onclick="window.print()">Imprimir Lista</button>
+                    <input id="buscaTec" placeholder="🔍 Buscar unidade escolar...">
+                    <button class="btn-action" onclick="window.print()">🖨️ Exportar</button>
                 </div>
                 <div id="listaTec"></div>
             </div>
         </section>
 
         <section id="escola" class="hidden">
-            <div class="content-card">
+            <div class="kpi-card">
                 <div class="controls-row">
                     <select id="selEscola" style="grid-column: span 2;"></select>
-                    <span>Histórico da Unidade</span>
+                    <span style="color:var(--text-muted); align-self: center;">Histórico Completo</span>
                 </div>
                 <div id="listaEsc"></div>
             </div>
@@ -135,7 +204,8 @@
 </div>
 
 <script>
-const URL_GAS = "https://script.google.com/macros/s/AKfycbxbDpoifeIgJn7ciehq2WIMpPRt-8fYKL3LcrWRIqzz_RSUOwJwD5E_GEIpO-1rLKM/exec";
+// A URL deve ser a do seu Web App do Google Apps Script
+const URL_GAS = "https://script.google.com/macros/s/AKfycbyMfkc6G97ArUCvvLAOi2ySRCK0nVSo3eBOKT1himsiJ7NACRoapcKzzGI7ZLT34hM/exec";
 
 const state = {
     dados: [],
@@ -147,7 +217,7 @@ async function carregar() {
     try {
         const res = await fetch(URL_GAS);
         const bruto = await res.json();
-        // CORREÇÃO: Filtra apenas linhas onde a coluna Escola (linha[1]) não está vazia
+        // Limpeza rigorosa de dados (ignora as 500 linhas se estiverem vazias)
         state.dados = bruto.filter(item => item.escola && item.escola.toString().trim() !== "");
         
         document.getElementById('loading').classList.add('hidden');
@@ -156,16 +226,16 @@ async function carregar() {
         popularFiltros();
         atualizarTudo();
     } catch (e) {
-        document.getElementById('loading').textContent = "Erro ao carregar dados. Verifique a planilha.";
+        document.getElementById('loading').innerHTML = "❌ Erro ao conectar com a planilha.";
     }
 }
 
 function atualizarTudo() {
-    // KPIs
+    // Atualização dos KPIs
     document.getElementById('kpiTotal').textContent = state.dados.length;
-    document.getElementById('kpiPrev').textContent = state.dados.filter(d => d.tipo === 'Preventiva').length;
-    document.getElementById('kpiCorr').textContent = state.dados.filter(d => d.tipo === 'Corretiva').length;
     document.getElementById('kpiAgend').textContent = state.dados.filter(d => d.status === 'Agendada').length;
+    document.getElementById('kpiConcl').textContent = state.dados.filter(d => d.status === 'Concluída').length;
+    document.getElementById('kpiCorr').textContent = state.dados.filter(d => d.tipo === 'Corretiva').length;
 
     renderizarCalendario();
     renderTecnico();
@@ -177,8 +247,8 @@ function popularFiltros() {
     const tecs = [...new Set(state.dados.map(d => d.tecnico))].filter(Boolean).sort();
     const escs = [...new Set(state.dados.map(d => d.escola))].filter(Boolean).sort();
     
-    document.getElementById('selTecnico').innerHTML = '<option value="">Todos Técnicos</option>' + tecs.map(t => `<option>${t}</option>`).join('');
-    document.getElementById('selEscola').innerHTML = '<option value="">Selecione uma Escola...</option>' + escs.map(e => `<option>${e}</option>`).join('');
+    document.getElementById('selTecnico').innerHTML = '<option value="">👨‍🔧 Todos os Técnicos</option>' + tecs.map(t => `<option>${t}</option>`).join('');
+    document.getElementById('selEscola').innerHTML = '<option value="">🏫 Selecionar Escola...</option>' + escs.map(e => `<option>${e}</option>`).join('');
     
     document.getElementById('selTecnico').onchange = renderTecnico;
     document.getElementById('buscaTec').oninput = renderTecnico;
@@ -186,23 +256,28 @@ function popularFiltros() {
 }
 
 function criarCard(v) {
-    const statusClass = v.status === 'Agendada' ? 'status-agendada' : 'status-concluida';
+    const stClass = v.status === 'Agendada' ? 'st-agendada' : 'st-concluida';
     return `
         <div class="v-card ${v.tipo}">
             <div style="display:flex; justify-content:space-between; align-items:start">
                 <div>
-                    <b style="font-size:15px">${v.escola}</b><br>
-                    <small style="color:var(--text-muted)">${v.municipio} | ID: ${v.chamado || 'N/A'}</small>
+                    <div style="color:var(--primary); font-weight:800; font-size:16px">${v.escola}</div>
+                    <div style="color:var(--text-muted); font-size:12px; margin-top:2px">
+                        📍 ${v.municipio} • 🆔 ${v.chamado || 'S/ Chamado'}
+                    </div>
                 </div>
                 <div style="text-align:right">
-                    <span class="status-pill ${statusClass}">${v.status}</span><br>
-                    <small style="font-weight:bold; color:${v.tipo === 'Preventiva' ? 'var(--success)' : 'var(--danger)'}">${v.tipo}</small>
+                    <span class="status-badge ${stClass}">${v.status}</span>
+                    <div style="font-size:10px; font-weight:900; margin-top:8px; color:${v.tipo === 'Preventiva' ? 'var(--success)' : 'var(--danger)'}">
+                        ${v.tipo.toUpperCase()}
+                    </div>
                 </div>
             </div>
-            <div style="margin-top:8px; font-size:12px">
-                📅 ${v.data.split('-').reverse().join('/')} | 👨‍🔧 ${v.tecnico}
+            <div style="margin-top:12px; font-size:13px; color: #fff; display:flex; gap:15px">
+                <span>📅 ${v.data.split('-').reverse().join('/')}</span>
+                <span>👨‍🔧 ${v.tecnico}</span>
             </div>
-            ${v.observacao ? `<div class="obs-tag">${v.observacao}</div>` : ''}
+            ${v.observacao ? `<div class="obs-tag">💬 ${v.observacao}</div>` : ''}
         </div>
     `;
 }
@@ -211,34 +286,32 @@ function renderTecnico() {
     const tec = document.getElementById('selTecnico').value;
     const busca = document.getElementById('buscaTec').value.toLowerCase();
     const filtrados = state.dados.filter(d => (!tec || d.tecnico === tec) && d.escola.toLowerCase().includes(busca));
-    
-    document.getElementById('listaTec').innerHTML = filtrados.map(criarCard).join('') || '<p>Nenhum registro.</p>';
+    document.getElementById('listaTec').innerHTML = filtrados.map(criarCard).join('') || '<p style="color:var(--text-muted)">Nenhum registro encontrado.</p>';
 }
 
 function renderEscola() {
     const esc = document.getElementById('selEscola').value;
     const filtrados = state.dados.filter(d => d.escola === esc);
-    document.getElementById('listaEsc').innerHTML = filtrados.map(criarCard).join('') || '<p>Selecione uma escola no filtro acima.</p>';
+    document.getElementById('listaEsc').innerHTML = filtrados.map(criarCard).join('') || '<p style="color:var(--text-muted)">Selecione uma escola para ver o histórico.</p>';
 }
 
-// Logica do Calendário
 function renderizarCalendario() {
     const ano = state.dataAtual.getFullYear();
     const mes = state.dataAtual.getMonth();
-    const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
     document.getElementById('currentMonthYear').textContent = `${meses[mes]} ${ano}`;
 
     const primeiroDia = new Date(ano, mes, 1).getDay();
     const ultimoDia = new Date(ano, mes + 1, 0).getDate();
     
     let html = '';
-    for (let i = 0; i < primeiroDia; i++) html += '<div class="day empty"></div>';
+    for (let i = 0; i < primeiroDia; i++) html += '<div class="day empty" style="border:none; background:transparent"></div>';
     
     for (let d = 1; d <= ultimoDia; d++) {
         const dataStr = `${ano}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
         const visitas = state.dados.filter(v => v.data.includes(dataStr));
         html += `
-            <div class="day ${visitas.length > 0 ? 'has-visit' : ''}" onclick="verDetalhes('${dataStr}')">
+            <div class="day ${visitas.length > 0 ? 'has-visit' : ''}" onclick="verDetalhes('${dataStr}', this)">
                 ${visitas.length > 0 ? `<span class="visit-dot">${visitas.length}</span>` : ''}
                 ${d}
             </div>`;
@@ -246,16 +319,20 @@ function renderizarCalendario() {
     document.getElementById('calendar').innerHTML = html;
 }
 
-function verDetalhes(dataStr) {
+function verDetalhes(dataStr, el) {
+    document.querySelectorAll('.day').forEach(d => d.classList.remove('selected'));
+    if(el) el.classList.add('selected');
+
     const visitas = state.dados.filter(v => v.data.includes(dataStr));
     document.getElementById('detailsPanel').classList.remove('hidden');
-    document.getElementById('selectedDateTitle').textContent = `Visitas em ${dataStr.split('-').reverse().join('/')}`;
-    document.getElementById('selectedVisitsList').innerHTML = visitas.map(criarCard).join('') || '<p>Sem visitas.</p>';
+    document.getElementById('selectedDateTitle').textContent = `📅 Visitas em ${dataStr.split('-').reverse().join('/')}`;
+    document.getElementById('selectedVisitsList').innerHTML = visitas.map(criarCard).join('') || '<p>Sem agendamentos.</p>';
 }
 
 function navegarMes(dir) {
     state.dataAtual.setMonth(state.dataAtual.getMonth() + dir);
     renderizarCalendario();
+    document.getElementById('detailsPanel').classList.add('hidden');
 }
 
 function inicializarGrafico() {
@@ -264,8 +341,8 @@ function inicializarGrafico() {
 
     const mapa = {};
     state.dados.forEach(d => {
-        if (!mapa[d.tecnico]) mapa[d.tecnico] = { preventivas: 0, corretivas: 0 };
-        d.tipo === 'Preventiva' ? mapa[d.tecnico].preventivas++ : mapa[d.tecnico].corretivas++;
+        if (!mapa[d.tecnico]) mapa[d.tecnico] = { prev: 0, corr: 0 };
+        d.tipo === 'Preventiva' ? mapa[d.tecnico].prev++ : mapa[d.tecnico].corr++;
     });
 
     const labels = Object.keys(mapa);
@@ -274,15 +351,25 @@ function inicializarGrafico() {
         data: {
             labels: labels,
             datasets: [
-                { label: 'Prev.', data: labels.map(l => mapa[l].preventivas), backgroundColor: '#16a34a' },
-                { label: 'Corr.', data: labels.map(l => mapa[l].corretivas), backgroundColor: '#dc2626' }
+                { label: 'Preventivas', data: labels.map(l => mapa[l].prev), backgroundColor: '#22c55e', borderRadius: 5 },
+                { label: 'Corretivas', data: labels.map(l => mapa[l].corr), backgroundColor: '#ef4444', borderRadius: 5 }
             ]
         },
-        options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        options: {
+            indexAxis: 'y',
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { labels: { color: '#94a3b8', font: { weight: 'bold' } } }
+            },
+            scales: {
+                x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+            }
+        }
     });
 }
 
-// Alternar abas
+// Navegação de Abas
 document.querySelectorAll('nav button').forEach(btn => {
     btn.onclick = () => {
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
