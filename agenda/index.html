@@ -397,10 +397,12 @@ function showDay(date, list) {
     document.getElementById('dList').innerHTML = list.length ? list.map(itemTemplate).join('') : '<p style="color:var(--text-dim); font-size:0.8rem">Sem registros.</p>';
 }
 
+// Substitua APENAS a função renderPager e as chamadas dentro de renderTec/renderEsc por estas:
+
 function renderTec() {
     const t = document.getElementById('sTec').value;
     const b = document.getElementById('iBusca').value.toLowerCase();
-    const d = document.getElementById('iDataFiltro').value; // Valor vem como YYYY-MM-DD
+    const d = document.getElementById('iDataFiltro').value; 
     
     const filtered = db.filter(r => {
         const matchTec = !t || r.tecnico === t;
@@ -412,7 +414,12 @@ function renderTec() {
     const start = (tPage - 1) * pageSize;
     const paginated = filtered.slice(start, start + pageSize);
     document.getElementById('tList').innerHTML = paginated.map(itemTemplate).join('');
-    renderPager('tPager', filtered.length, tPage, (p) => { tPage = p; renderTec(); });
+    
+    // Chamada corrigida
+    renderPager('tPager', filtered.length, tPage, (p) => { 
+        tPage = p; 
+        renderTec(); 
+    });
 }
 
 function renderEsc() {
@@ -421,16 +428,40 @@ function renderEsc() {
     const start = (ePage - 1) * pageSize;
     const paginated = filtered.slice(start, start + pageSize);
     document.getElementById('eHist').innerHTML = paginated.map(itemTemplate).join('');
-    renderPager('ePager', filtered.length, ePage, (p) => { ePage = p; renderEsc(); });
+    
+    // Chamada corrigida
+    renderPager('ePager', filtered.length, ePage, (p) => { 
+        ePage = p; 
+        renderEsc(); 
+    });
 }
 
 function renderPager(id, total, current, callback) {
     const totalPages = Math.ceil(total / pageSize);
     const container = document.getElementById(id);
-    if (totalPages <= 1) { container.innerHTML = ''; return; }
-    container.innerHTML = `<button class="pg-btn" ${current === 1 ? 'disabled' : ''} onclick="window.scrollTo(0,0); ${callback.name}(${current - 1})">Anterior</button>
-        <span style="font-size:0.8rem; font-weight:700">Página ${current} de ${totalPages}</span>
-        <button class="pg-btn" ${current === totalPages ? 'disabled' : ''} onclick="window.scrollTo(0,0); ${callback.name}(${current + 1})">Próximo</button>`;
+    container.innerHTML = ''; // Limpa o container
+    
+    if (totalPages <= 1) return;
+
+    const btnPrev = document.createElement('button');
+    btnPrev.className = 'pg-btn';
+    btnPrev.innerText = 'Anterior';
+    btnPrev.disabled = current === 1;
+    btnPrev.onclick = () => { window.scrollTo(0,0); callback(current - 1); };
+
+    const span = document.createElement('span');
+    span.style.cssText = "font-size:0.8rem; font-weight:700; margin: 0 10px;";
+    span.innerText = `Página ${current} de ${totalPages}`;
+
+    const btnNext = document.createElement('button');
+    btnNext.className = 'pg-btn';
+    btnNext.innerText = 'Próximo';
+    btnNext.disabled = current === totalPages;
+    btnNext.onclick = () => { window.scrollTo(0,0); callback(current + 1); };
+
+    container.appendChild(btnPrev);
+    container.appendChild(span);
+    container.appendChild(btnNext);
 }
 
 function renderChart() {
