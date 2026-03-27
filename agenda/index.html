@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visitas Tech Pro v8.2 | Google Standard</title>
+    <title>Visitas Tech Pro v8.3 | Enterprise Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -44,78 +44,52 @@
 
         .container-fluid { width: 100%; padding: 1.5rem; }
 
-        /* KPIS - MODERNIZADOS */
+        /* KPIS */
         .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
         .kpi-card {
             background: var(--card-bg); border: 1px solid var(--border);
             padding: 1.2rem; border-radius: 20px; border-left: 4px solid var(--accent);
-            backdrop-filter: blur(10px); transition: transform 0.3s;
+            backdrop-filter: blur(10px);
         }
-        .kpi-card:hover { transform: translateY(-3px); }
         .kpi-label { color: var(--text-dim); font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
         .kpi-value { font-size: 1.8rem; font-weight: 800; display: block; margin-top: 5px; }
 
-        /* CALENDÁRIO GOOGLE STYLE */
+        /* CALENDÁRIO */
         .main-grid { display: grid; grid-template-columns: 1fr 400px; gap: 1.5rem; }
         .glass-panel {
             background: var(--card-bg); border: 1px solid var(--border);
             border-radius: 24px; padding: 1.5rem; backdrop-filter: blur(10px);
         }
-
         .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .cal-header h3 { margin: 0; font-size: 1.2rem; font-weight: 800; text-transform: capitalize; }
-        
-        .cal-weekdays { 
-            display: grid; grid-template-columns: repeat(7, 1fr); 
-            text-align: center; margin-bottom: 10px; 
-            color: var(--text-dim); font-size: 0.7rem; font-weight: 800;
-        }
-
+        .cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 10px; color: var(--text-dim); font-size: 0.7rem; font-weight: 800; }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
         
-        .day {
-            background: #0b0f1a; aspect-ratio: 1.4; padding: 8px;
-            display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;
-            cursor: pointer; position: relative; transition: 0.2s;
-        }
+        .day { background: #0b0f1a; aspect-ratio: 1.4; padding: 8px; display: flex; flex-direction: column; cursor: pointer; transition: 0.2s; }
         .day:hover:not(.empty) { background: #161e2e; }
         .day.empty { background: #070a11; color: #2d3748; }
-        .day b { font-size: 0.8rem; font-weight: 600; z-index: 2; }
-        
-        /* Badge de Visitas Estilo Google */
-        .visit-pill {
-            margin-top: auto; width: 100%;
-            background: rgba(59, 130, 246, 0.15);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            color: var(--accent); font-size: 10px; font-weight: 800;
-            padding: 2px 6px; border-radius: 4px;
-            display: flex; align-items: center; gap: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
         .day.selected { background: rgba(59, 130, 246, 0.2) !important; border: 1px solid var(--accent) !important; z-index: 5; }
+        .visit-pill { margin-top: auto; width: 100%; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: var(--accent); font-size: 9px; font-weight: 800; padding: 2px 4px; border-radius: 4px; }
 
-        /* CARDS DE DETALHE */
+        /* VISIT CARDS DETALHADOS */
         .visit-item {
             background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-            border-radius: 16px; padding: 1rem; margin-bottom: 1rem;
-            border-left: 4px solid #444;
+            border-radius: 16px; padding: 1.2rem; margin-bottom: 1rem; border-left: 4px solid #444;
         }
         .visit-item.Preventiva { border-left-color: var(--purple); }
         .visit-item.Corretiva { border-left-color: var(--danger); }
+        .obs-box { background: rgba(245, 158, 11, 0.05); border: 1px dashed rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 8px; margin-top: 10px; font-size: 0.75rem; color: #e2e8f0; line-height: 1.4; }
 
-        /* CORREÇÃO DOS SELECTS */
+        /* PAGINAÇÃO */
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; padding: 10px; }
+        .pg-btn { background: var(--input-bg); border: 1px solid var(--border); color: white; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.75rem; transition: 0.3s; }
+        .pg-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .pg-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+
+        /* SELECTS E FILTROS */
         .filter-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; margin-bottom: 1.5rem; }
-        select, input {
-            background: var(--input-bg) !important; border: 1px solid var(--border) !important;
-            color: #fff !important; padding: 0.8rem; border-radius: 12px; outline: none; font-size: 0.85rem;
-        }
-        option { background: #0f172a; color: white; }
-
-        #loader {
-            position: fixed; inset: 0; background: var(--bg); z-index: 2000;
-            display: flex; align-items: center; justify-content: center;
-        }
-
+        select, input { background: var(--input-bg) !important; border: 1px solid var(--border) !important; color: #fff !important; padding: 0.8rem; border-radius: 12px; outline: none; }
+        
+        #loader { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 1000px) { .main-grid { grid-template-columns: 1fr; } .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
     </style>
@@ -126,7 +100,7 @@
 
 <nav>
     <div class="nav-content">
-        <div style="font-weight: 900; font-size: 1.2rem; color: var(--accent);">V-TECH <span style="color:white">DASH</span></div>
+        <div style="font-weight: 900; font-size: 1.2rem; color: var(--accent);">V-TECH <span style="color:white">PRO</span></div>
         <div class="nav-links">
             <button class="active" onclick="tab('agenda', this)">CALENDÁRIO</button>
             <button onclick="tab('tecnico', this)">TÉCNICOS</button>
@@ -137,7 +111,7 @@
 
 <div class="container-fluid">
     <div class="kpi-grid">
-        <div class="kpi-card" style="border-left-color: var(--accent)"><span class="kpi-label">Total Geral</span><span class="kpi-value" id="k-tot">0</span></div>
+        <div class="kpi-card" style="border-left-color: var(--accent)"><span class="kpi-label">Total</span><span class="kpi-value" id="k-tot">0</span></div>
         <div class="kpi-card" style="border-left-color: var(--warning)"><span class="kpi-label">Agendadas</span><span class="kpi-value" id="k-age" style="color:var(--warning)">0</span></div>
         <div class="kpi-card" style="border-left-color: var(--success)"><span class="kpi-label">Concluídas</span><span class="kpi-value" id="k-con" style="color:var(--success)">0</span></div>
         <div class="kpi-card" style="border-left-color: var(--purple)"><span class="kpi-label">Preventivas</span><span class="kpi-value" id="k-pre" style="color:var(--purple)">0</span></div>
@@ -147,23 +121,17 @@
     <section id="agenda" class="tabs">
         <div class="main-grid">
             <div class="glass-panel">
-                <div class="cal-header">
-                    <h3 id="mLabel"></h3>
-                    <div style="display:flex; gap:10px">
-                        <button onclick="moveMonth(-1)" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem">❮</button>
-                        <button onclick="viewDate = new Date(); refresh();" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:white; padding:4px 12px; border-radius:8px; font-size:0.7rem; cursor:pointer">Hoje</button>
-                        <button onclick="moveMonth(1)" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem">❯</button>
+                <div class="cal-header"><h3 id="mLabel"></h3>
+                    <div style="display:flex; gap:8px">
+                        <button onclick="moveMonth(-1)" style="background:none; border:none; color:white; cursor:pointer;">❮</button>
+                        <button onclick="moveMonth(1)" style="background:none; border:none; color:white; cursor:pointer;">❯</button>
                     </div>
                 </div>
-                
-                <div class="cal-weekdays">
-                    <div>DOM</div><div>SEG</div><div>TER</div><div>QUA</div><div>QUI</div><div>SEX</div><div>SÁB</div>
-                </div>
+                <div class="cal-weekdays"><div>DOM</div><div>SEG</div><div>TER</div><div>QUA</div><div>QUI</div><div>SEX</div><div>SÁB</div></div>
                 <div class="cal-grid" id="calendar"></div>
             </div>
-            
             <div class="glass-panel">
-                <h4 id="dTitle" style="margin:0 0 1rem 0; font-size:0.7rem; color:var(--text-dim); text-transform: uppercase; letter-spacing:1px">Visitas do Dia</h4>
+                <h4 id="dTitle" style="margin:0 0 1rem 0; font-size:0.7rem; color:var(--text-dim); text-transform: uppercase;">Visitas do Dia</h4>
                 <div id="dList"></div>
             </div>
         </div>
@@ -173,11 +141,12 @@
         <div class="glass-panel">
             <div class="filter-row">
                 <select id="sTec"></select>
-                <input type="text" id="iBusca" placeholder="Pesquisar escola...">
+                <input type="text" id="iBusca" placeholder="Pesquisar unidade...">
                 <button onclick="window.print()" style="background:#fff; color:#000; border:none; padding:0 15px; border-radius:10px; font-weight:800; cursor:pointer; font-size:0.8rem">PDF</button>
             </div>
             <div id="tList"></div>
-            <div style="height:300px; margin-top:2rem"><canvas id="chartTec"></canvas></div>
+            <div class="pagination" id="tPager"></div>
+            <div style="height:250px; margin-top:2rem"><canvas id="chartTec"></canvas></div>
         </div>
     </section>
 
@@ -185,15 +154,15 @@
         <div class="glass-panel">
             <select id="sEsc" style="width:100%; margin-bottom:1.5rem"></select>
             <div id="eHist"></div>
+            <div class="pagination" id="ePager"></div>
         </div>
     </section>
 </div>
 
 <script>
 const URL = "https://script.google.com/macros/s/AKfycbxbDpoifeIgJn7ciehq2WIMpPRt-8fYKL3LcrWRIqzz_RSUOwJwD5E_GEIpO-1rLKM/exec";
-let db = [];
-let viewDate = new Date();
-let myChart = null;
+let db = [], viewDate = new Date(), myChart = null;
+let tPage = 1, ePage = 1, pageSize = 10;
 
 async function init() {
     try {
@@ -201,8 +170,7 @@ async function init() {
         const data = await res.json();
         db = data.filter(r => r.escola && r.escola.toString().trim() !== "");
         document.getElementById('loader').style.display = 'none';
-        setupFilters();
-        refresh();
+        setupFilters(); refresh();
     } catch(e) { console.error(e); }
 }
 
@@ -212,9 +180,27 @@ function refresh() {
     document.getElementById('k-con').innerText = db.filter(r => r.status === 'Concluída').length;
     document.getElementById('k-pre').innerText = db.filter(r => r.tipo === 'Preventiva').length;
     document.getElementById('k-cor').innerText = db.filter(r => r.tipo === 'Corretiva').length;
-    renderCal();
-    renderTec();
-    renderChart();
+    renderCal(); renderTec(); renderEsc(); renderChart();
+}
+
+function itemTemplate(v) {
+    const dataFormatada = v.data ? v.data.split('-').reverse().join('/') : '---';
+    return `
+        <div class="visit-item ${v.tipo}">
+            <div style="display:flex; justify-content:space-between; align-items:start">
+                <div>
+                    <div style="font-weight:800; font-size:1.05rem; color:var(--accent)">${v.escola}</div>
+                    <div style="color:var(--text-dim); font-size:0.75rem; margin-top:4px">📍 ${v.municipio} | 📅 ${dataFormatada}</div>
+                </div>
+                <span style="font-size:9px; font-weight:800; color:${v.status === 'Agendada' ? 'var(--warning)' : 'var(--success)'}; border: 1px solid currentColor; padding: 2px 6px; border-radius:4px">${v.status.toUpperCase()}</span>
+            </div>
+            <div style="margin-top:1rem; display:flex; justify-content:space-between; font-size:0.8rem; border-top:1px solid rgba(255,255,255,0.05); padding-top:10px">
+                <span style="color:var(--text-main); font-weight:600">👨‍🔧 ${v.tecnico}</span>
+                <span style="color:var(--text-dim); font-weight:700">${v.tipo}</span>
+            </div>
+            ${v.observacao ? `<div class="obs-box"><strong>Obs:</strong> ${v.observacao}</div>` : ''}
+        </div>
+    `;
 }
 
 function renderCal() {
@@ -222,60 +208,52 @@ function renderCal() {
     const y = viewDate.getFullYear(), m = viewDate.getMonth();
     const mNames = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
     document.getElementById('mLabel').innerText = `${mNames[m]} ${y}`;
-
     const firstDay = new Date(y, m, 1).getDay();
-    const lastDate = new Date(y, m + 1, 0).getDate();
-    const prevLastDate = new Date(y, m, 0).getDate();
-
-    // Dias do mês anterior
-    for (let i = firstDay; i > 0; i--) {
-        const dEl = document.createElement('div');
-        dEl.className = 'day empty';
-        dEl.innerHTML = `<b>${prevLastDate - i + 1}</b>`;
-        grid.appendChild(dEl);
-    }
-
-    // Dias do mês atual
+    const lastDate = new Date(y, m+1, 0).getDate();
+    for (let i = 0; i < firstDay; i++) grid.innerHTML += '<div class="day empty"></div>';
     for (let d = 1; d <= lastDate; d++) {
         const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
         const visits = db.filter(v => v.data === dStr);
         const dayEl = document.createElement('div');
         dayEl.className = 'day';
         dayEl.innerHTML = `<b>${d}</b>`;
-        
-        if(visits.length > 0) {
-            dayEl.innerHTML += `<div class="visit-pill"><span>●</span> ${visits.length} Visitas</div>`;
-        }
-
-        dayEl.onclick = () => {
-            document.querySelectorAll('.day').forEach(el => el.classList.remove('selected'));
-            dayEl.classList.add('selected');
-            showDay(dStr, visits);
-        };
+        if(visits.length > 0) dayEl.innerHTML += `<div class="visit-pill">${visits.length} Visitas</div>`;
+        dayEl.onclick = () => { document.querySelectorAll('.day').forEach(el => el.classList.remove('selected')); dayEl.classList.add('selected'); showDay(dStr, visits); };
         grid.appendChild(dayEl);
     }
 }
 
 function showDay(date, list) {
     document.getElementById('dTitle').innerText = `VISITAS: ${date.split('-').reverse().join('/')}`;
-    document.getElementById('dList').innerHTML = list.length ? list.map(itemTemplate).join('') : '<p style="color:var(--text-dim); font-size:0.8rem">Sem compromissos.</p>';
+    document.getElementById('dList').innerHTML = list.length ? list.map(itemTemplate).join('') : '<p style="color:var(--text-dim); font-size:0.8rem">Sem registros.</p>';
 }
 
-function itemTemplate(v) {
-    return `
-        <div class="visit-item ${v.tipo}">
-            <div style="display:flex; justify-content:space-between; align-items:start">
-                <div>
-                    <div style="font-weight:700; font-size:1rem">${v.escola}</div>
-                    <div style="color:var(--text-dim); font-size:0.75rem; margin-top:2px">📍 ${v.municipio}</div>
-                </div>
-                <span style="font-size:9px; font-weight:800; color:${v.status === 'Agendada' ? 'var(--warning)' : 'var(--success)'}">${v.status.toUpperCase()}</span>
-            </div>
-            <div style="margin-top:1rem; display:flex; justify-content:space-between; font-size:0.75rem; border-top:1px solid rgba(255,255,255,0.05); padding-top:10px">
-                <span style="color:var(--accent); font-weight:600">👨‍🔧 ${v.tecnico}</span>
-                <span style="color:var(--text-dim)">${v.tipo}</span>
-            </div>
-        </div>
+function renderTec() {
+    const t = document.getElementById('sTec').value, b = document.getElementById('iBusca').value.toLowerCase();
+    const filtered = db.filter(r => (!t || r.tecnico === t) && r.escola.toLowerCase().includes(b));
+    const start = (tPage - 1) * pageSize;
+    const paginated = filtered.slice(start, start + pageSize);
+    document.getElementById('tList').innerHTML = paginated.map(itemTemplate).join('');
+    renderPager('tPager', filtered.length, tPage, (p) => { tPage = p; renderTec(); });
+}
+
+function renderEsc() {
+    const e = document.getElementById('sEsc').value;
+    const filtered = db.filter(r => r.escola === e);
+    const start = (ePage - 1) * pageSize;
+    const paginated = filtered.slice(start, start + pageSize);
+    document.getElementById('eHist').innerHTML = paginated.map(itemTemplate).join('');
+    renderPager('ePager', filtered.length, ePage, (p) => { ePage = p; renderEsc(); });
+}
+
+function renderPager(id, total, current, callback) {
+    const totalPages = Math.ceil(total / pageSize);
+    const container = document.getElementById(id);
+    if (totalPages <= 1) { container.innerHTML = ''; return; }
+    container.innerHTML = `
+        <button class="pg-btn" ${current === 1 ? 'disabled' : ''} onclick="window.scrollTo(0,0); ${callback.name}(${current - 1})">Anterior</button>
+        <span style="font-size:0.8rem; font-weight:700">Página ${current} de ${totalPages}</span>
+        <button class="pg-btn" ${current === totalPages ? 'disabled' : ''} onclick="window.scrollTo(0,0); ${callback.name}(${current + 1})">Próximo</button>
     `;
 }
 
@@ -284,22 +262,14 @@ function renderChart() {
     if(myChart) myChart.destroy();
     const tecs = [...new Set(db.map(r => r.tecnico))].filter(t => t);
     myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
+        type: 'bar', data: {
             labels: tecs,
             datasets: [
                 { label: 'Concluídas', data: tecs.map(t => db.filter(r => r.tecnico === t && r.status === 'Concluída').length), backgroundColor: '#10b981' },
                 { label: 'Agendadas', data: tecs.map(t => db.filter(r => r.tecnico === t && r.status === 'Agendada').length), backgroundColor: '#3b82f6' }
             ]
         },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } },
-            scales: {
-                x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
-                y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
-            }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } }, scales: { x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } }, y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
     });
 }
 
@@ -308,21 +278,9 @@ function setupFilters() {
     const escs = [...new Set(db.map(r => r.escola))].filter(e => e).sort();
     document.getElementById('sTec').innerHTML = '<option value="">Todos Técnicos</option>' + tecs.map(t => `<option>${t}</option>`).join('');
     document.getElementById('sEsc').innerHTML = '<option value="">Selecionar Escola...</option>' + escs.map(e => `<option>${e}</option>`).join('');
-    document.getElementById('sTec').onchange = renderTec;
-    document.getElementById('iBusca').oninput = renderTec;
-    document.getElementById('sEsc').onchange = renderEsc;
-}
-
-function renderTec() {
-    const t = document.getElementById('sTec').value, b = document.getElementById('iBusca').value.toLowerCase();
-    const l = db.filter(r => (!t || r.tecnico === t) && r.escola.toLowerCase().includes(b));
-    document.getElementById('tList').innerHTML = l.map(itemTemplate).join('');
-}
-
-function renderEsc() {
-    const e = document.getElementById('sEsc').value;
-    const l = db.filter(r => r.escola === e);
-    document.getElementById('eHist').innerHTML = l.map(itemTemplate).join('');
+    document.getElementById('sTec').onchange = () => { tPage = 1; renderTec(); };
+    document.getElementById('iBusca').oninput = () => { tPage = 1; renderTec(); };
+    document.getElementById('sEsc').onchange = () => { ePage = 1; renderEsc(); };
 }
 
 function tab(id, b) {
