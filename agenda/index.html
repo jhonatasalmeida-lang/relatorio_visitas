@@ -44,12 +44,13 @@
 
         .container-fluid { width: 100%; padding: 1.5rem; }
 
-        /* --- LAYOUT DE KPIS OTIMIZADO --- */
+        /* --- LAYOUT DE KPIS ALINHADO --- */
         .kpi-container { 
             display: flex; 
             gap: 1.5rem; 
             margin-bottom: 2rem; 
             flex-wrap: wrap; 
+            align-items: stretch; /* Força todos os grupos a terem a mesma altura */
         }
 
         .kpi-group { 
@@ -57,7 +58,6 @@
             min-width: 320px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
             padding: 20px;
             border-radius: 28px;
             background: rgba(255, 255, 255, 0.03);
@@ -70,7 +70,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 5px;
+            margin-bottom: 12px; /* Espaço fixo para o header */
+            height: 20px;
         }
 
         .group-title { 
@@ -81,15 +82,15 @@
             letter-spacing: 2px;
         }
 
-        /* BARRA DE PROGRESSO */
+        /* BARRA DE PROGRESSO OTIMIZADA */
+        .progress-wrapper { height: 16px; margin-bottom: 8px; } /* Container fixo para evitar desalinhamento */
         .progress-container {
             width: 100%;
             height: 6px;
             background: rgba(255,255,255,0.05);
             border-radius: 10px;
-            margin-bottom: 10px;
             overflow: hidden;
-            display: none; /* Aparece via JS quando há dados */
+            display: none; 
         }
         .progress-bar {
             height: 100%;
@@ -102,6 +103,7 @@
             display: flex;
             gap: 12px;
             width: 100%;
+            flex: 1; /* Faz a linha de cards ocupar o resto do grupo */
         }
 
         .kpi-card {
@@ -113,6 +115,9 @@
             border-left: 4px solid var(--accent);
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Centraliza o conteúdo se o card esticar */
         }
 
         .kpi-card:hover {
@@ -123,7 +128,7 @@
         .kpi-label { color: var(--text-dim); font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
         .kpi-value { font-size: 2rem; font-weight: 800; display: block; margin-top: 5px; }
 
-        /* CALENDÁRIO E RESTANTE */
+        /* CALENDÁRIO E TABELAS */
         .main-grid { display: grid; grid-template-columns: 1fr 400px; gap: 1.5rem; }
         .glass-panel {
             background: var(--card-bg); border: 1px solid var(--border);
@@ -149,7 +154,6 @@
 
         .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; padding: 10px; }
         .pg-btn { background: var(--input-bg); border: 1px solid var(--border); color: white; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.75rem; transition: 0.3s; }
-        .pg-btn:disabled { opacity: 0.3; cursor: not-allowed; }
         
         .filter-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; margin-bottom: 1.5rem; }
         select, input { background: var(--input-bg) !important; border: 1px solid var(--border) !important; color: #fff !important; padding: 0.8rem; border-radius: 12px; outline: none; }
@@ -161,6 +165,7 @@
             .main-grid { grid-template-columns: 1fr; } 
             .kpi-container { flex-direction: column; }
             .kpi-row { flex-direction: column; }
+            .kpi-group { min-width: 100%; }
         }
     </style>
 </head>
@@ -185,7 +190,7 @@
         
         <div class="kpi-group group-total">
             <div class="group-header"><span class="group-title">📊 Visão Geral</span></div>
-            <div class="kpi-row">
+            <div class="progress-wrapper"></div> <div class="kpi-row">
                 <div class="kpi-card" style="border-left-color: var(--accent)">
                     <span class="kpi-label">Total Geral</span>
                     <span class="kpi-value" id="k-tot">0</span>
@@ -198,7 +203,9 @@
                 <span class="group-title">🔔 Status do Chamado</span>
                 <span id="perc-label" style="font-size: 0.65rem; font-weight: 800; color: var(--success)">0%</span>
             </div>
-            <div class="progress-container" id="p-cont"><div class="progress-bar" id="p-bar"></div></div>
+            <div class="progress-wrapper">
+                <div class="progress-container" id="p-cont"><div class="progress-bar" id="p-bar"></div></div>
+            </div>
             <div class="kpi-row">
                 <div class="kpi-card" style="border-left-color: var(--warning)">
                     <span class="kpi-label">Agendadas</span>
@@ -213,7 +220,7 @@
 
         <div class="kpi-group">
             <div class="group-header"><span class="group-title">🛠️ Atendimento</span></div>
-            <div class="kpi-row">
+            <div class="progress-wrapper"></div> <div class="kpi-row">
                 <div class="kpi-card" style="border-left-color: var(--purple)">
                     <span class="kpi-label">Preventivas</span>
                     <span class="kpi-value" id="k-pre" style="color:var(--purple)">0</span>
@@ -295,7 +302,6 @@ function refresh() {
     document.getElementById('k-pre').innerText = db.filter(r => r.tipo === 'Preventiva').length;
     document.getElementById('k-cor').innerText = db.filter(r => r.tipo === 'Corretiva').length;
 
-    // Atualizar Barra de Progresso
     if(totalStatus > 0) {
         document.getElementById('p-cont').style.display = 'block';
         document.getElementById('p-bar').style.width = perc + '%';
@@ -305,7 +311,6 @@ function refresh() {
     renderCal(); renderTec(); renderEsc(); renderChart();
 }
 
-// Funções de renderização mantidas exatamente como no original
 function itemTemplate(v) {
     const dataFormatada = v.data ? v.data.split('-').reverse().join('/') : '---';
     return `<div class="visit-item ${v.tipo}">
