@@ -44,47 +44,72 @@
 
         .container-fluid { width: 100%; padding: 1.5rem; }
 
-        /* --- NOVO LAYOUT DE KPIS SEPARADOS --- */
+        /* --- LAYOUT DE KPIS OTIMIZADO --- */
         .kpi-container { 
             display: flex; 
-            gap: 1.2rem; 
+            gap: 1.5rem; 
             margin-bottom: 2rem; 
             flex-wrap: wrap; 
-            align-items: stretch;
         }
+
         .kpi-group { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
-            gap: 0.8rem; 
-            padding: 15px;
-            border-radius: 24px;
-            background: rgba(255, 255, 255, 0.02);
+            flex: 1;
+            min-width: 300px; /* Garante que os grupos não fiquem esmagados */
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 18px;
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border);
-            flex: 2;
-            transition: 0.3s;
+            transition: transform 0.3s ease;
         }
-        .kpi-group:first-child { flex: 0.8; min-width: 160px; } /* Grupo Visão Geral menor */
-        
+
+        /* O grupo "Total" pode ser menor que os outros */
+        .kpi-group.group-total { flex: 0.6; min-width: 180px; }
+
+        .group-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+            padding-left: 5px;
+        }
+
         .group-title { 
-            grid-column: 1 / -1; 
             font-size: 0.65rem; 
             font-weight: 900; 
             color: var(--accent); 
             text-transform: uppercase; 
             letter-spacing: 2px;
-            margin-bottom: 4px;
+        }
+
+        .kpi-row {
             display: flex;
-            align-items: center;
-            gap: 6px;
+            gap: 12px;
+            width: 100%;
+            height: 100%;
         }
 
         .kpi-card {
-            background: var(--card-bg); border: 1px solid var(--border);
-            padding: 1.2rem; border-radius: 20px; border-left: 4px solid var(--accent);
+            flex: 1; /* Faz os cards preencherem todo o espaço da linha */
+            background: var(--card-bg); 
+            border: 1px solid var(--border);
+            padding: 1.2rem; 
+            border-radius: 20px; 
+            border-left: 4px solid var(--accent);
             backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
         }
+
+        .kpi-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
         .kpi-label { color: var(--text-dim); font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-        .kpi-value { font-size: 1.8rem; font-weight: 800; display: block; margin-top: 5px; }
+        .kpi-value { font-size: 2rem; font-weight: 800; display: block; margin-top: 5px; }
 
         /* CALENDÁRIO */
         .main-grid { display: grid; grid-template-columns: 1fr 400px; gap: 1.5rem; }
@@ -124,11 +149,11 @@
         #loader { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* RESPONSIVIDADE */
         @media (max-width: 1000px) { 
             .main-grid { grid-template-columns: 1fr; } 
             .kpi-container { flex-direction: column; }
-            .kpi-group { width: 100%; flex: none; }
+            .kpi-row { flex-direction: column; }
+            .kpi-group { min-width: 100%; }
         }
     </style>
 </head>
@@ -150,22 +175,51 @@
 <div class="container-fluid">
     
     <div class="kpi-container">
-        <div class="kpi-group">
-            <div class="group-title">📊 Visão Geral</div>
-            <div class="kpi-card" style="border-left-color: var(--accent)"><span class="kpi-label">Total</span><span class="kpi-value" id="k-tot">0</span></div>
+        
+        <div class="kpi-group group-total">
+            <div class="group-header">
+                <span class="group-title">📊 Visão Geral</span>
+            </div>
+            <div class="kpi-row">
+                <div class="kpi-card" style="border-left-color: var(--accent)">
+                    <span class="kpi-label">Total de Visitas</span>
+                    <span class="kpi-value" id="k-tot">0</span>
+                </div>
+            </div>
         </div>
 
         <div class="kpi-group">
-            <div class="group-title">🔔 Status do Chamado</div>
-            <div class="kpi-card" style="border-left-color: var(--warning)"><span class="kpi-label">Agendadas</span><span class="kpi-value" id="k-age" style="color:var(--warning)">0</span></div>
-            <div class="kpi-card" style="border-left-color: var(--success)"><span class="kpi-label">Concluídas</span><span class="kpi-value" id="k-con" style="color:var(--success)">0</span></div>
+            <div class="group-header">
+                <span class="group-title">🔔 Status do Chamado</span>
+            </div>
+            <div class="kpi-row">
+                <div class="kpi-card" style="border-left-color: var(--warning)">
+                    <span class="kpi-label">Agendadas</span>
+                    <span class="kpi-value" id="k-age" style="color:var(--warning)">0</span>
+                </div>
+                <div class="kpi-card" style="border-left-color: var(--success)">
+                    <span class="kpi-label">Concluídas</span>
+                    <span class="kpi-value" id="k-con" style="color:var(--success)">0</span>
+                </div>
+            </div>
         </div>
 
         <div class="kpi-group">
-            <div class="group-title">🛠️ Tipo de Atendimento</div>
-            <div class="kpi-card" style="border-left-color: var(--purple)"><span class="kpi-label">Preventivas</span><span class="kpi-value" id="k-pre" style="color:var(--purple)">0</span></div>
-            <div class="kpi-card" style="border-left-color: var(--danger)"><span class="kpi-label">Corretivas</span><span class="kpi-value" id="k-cor" style="color:var(--danger)">0</span></div>
+            <div class="group-header">
+                <span class="group-title">🛠️ Tipo de Atendimento</span>
+            </div>
+            <div class="kpi-row">
+                <div class="kpi-card" style="border-left-color: var(--purple)">
+                    <span class="kpi-label">Preventivas</span>
+                    <span class="kpi-value" id="k-pre" style="color:var(--purple)">0</span>
+                </div>
+                <div class="kpi-card" style="border-left-color: var(--danger)">
+                    <span class="kpi-label">Corretivas</span>
+                    <span class="kpi-value" id="k-cor" style="color:var(--danger)">0</span>
+                </div>
+            </div>
         </div>
+        
     </div>
 
     <section id="agenda" class="tabs">
