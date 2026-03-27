@@ -3,388 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visitas Tech Pro | Enterprise Edition</title>
+    <title>Dashboard Visitas v7.0 | High Performance</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #05070a;
-            --card-bg: rgba(22, 28, 45, 0.7);
+            --card: rgba(22, 28, 45, 0.7);
             --accent: #3b82f6;
-            --border: rgba(255, 255, 255, 0.08);
-            --text-main: #ffffff;
+            --text: #ffffff;
             --text-dim: #94a3b8;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --glass-border: rgba(255, 255, 255, 0.05);
+            --purple: #8b5cf6;
         }
 
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { 
-            margin: 0; 
-            background-color: var(--bg); 
-            color: var(--text-main); 
+            margin: 0; background: var(--bg); color: var(--text); 
             background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #05070a 60%);
-            min-height: 100vh;
+            min-height: 100vh; width: 100%; overflow-x: hidden;
         }
 
-        /* NAVEGAÇÃO FULL WIDTH */
+        /* FULL WIDTH LAYOUT */
         nav {
-            background: rgba(5, 7, 10, 0.8);
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
+            background: rgba(5, 7, 10, 0.9); backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255,255,255,0.1); padding: 1rem 2rem;
             position: sticky; top: 0; z-index: 1000;
         }
-        .nav-content { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .nav-links { display: flex; gap: 10px; }
-        
+        .nav-container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .nav-btns { display: flex; gap: 10px; }
         nav button {
             background: transparent; border: 1px solid transparent; color: var(--text-dim);
-            padding: 0.7rem 1.5rem; cursor: pointer; border-radius: 12px;
-            font-weight: 700; transition: 0.4s; font-size: 0.85rem;
+            padding: 0.6rem 1.2rem; cursor: pointer; border-radius: 10px; font-weight: 700; transition: 0.3s;
         }
-        nav button.active { 
-            background: var(--accent); color: white; 
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); border-color: var(--accent);
-        }
+        nav button.active { background: var(--accent); color: white; box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
 
-        /* CONTAINER 100% */
-        .container-fluid { width: 100%; padding: 2rem; }
+        .content { width: 100%; padding: 1.5rem; }
 
-        /* KPIS REVISADOS (5 CARDS) */
-        .kpi-grid { 
-            display: grid; 
-            grid-template-columns: repeat(5, 1fr); 
-            gap: 1.5rem; margin-bottom: 2rem;
+        /* KPIs 5 COLUNAS */
+        .kpi-row { 
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; 
         }
         .kpi-card {
-            background: var(--card-bg); 
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            padding: 1.5rem; border-radius: 24px;
-            position: relative; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: var(--card); border: 1px solid rgba(255,255,255,0.05);
+            padding: 1.2rem; border-radius: 20px; border-top: 3px solid var(--accent);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
-        .kpi-card::before {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
-        }
-        .kpi-total::before { background: var(--accent); }
-        .kpi-agend::before { background: var(--warning); }
-        .kpi-concl::before { background: var(--success); }
-        .kpi-prev::before { background: #8b5cf6; }
-        .kpi-corr::before { background: var(--danger); }
+        .kpi-label { font-size: 0.65rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+        .kpi-val { font-size: 1.8rem; font-weight: 800; display: block; margin-top: 5px; }
 
-        .kpi-label { color: var(--text-dim); font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-        .kpi-value { font-size: 2.2rem; font-weight: 800; display: block; margin-top: 8px; }
+        /* MAIN GRID */
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 400px; gap: 1.5rem; width: 100%; }
+        .panel { background: var(--card); border-radius: 24px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.05); }
 
-        /* LAYOUT DASHBOARD */
-        .main-layout { display: grid; grid-template-columns: 1fr 450px; gap: 1.5rem; }
-
-        .glass-panel {
-            background: var(--card-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 28px; padding: 2rem;
-            backdrop-filter: blur(10px);
-        }
-
-        /* CALENDÁRIO COM CONTADOR */
-        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        /* CALENDÁRIO */
+        .cal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
         .day {
-            aspect-ratio: 1; border-radius: 16px; border: 1px solid var(--border);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            cursor: pointer; position: relative; transition: 0.3s; background: rgba(255,255,255,0.02);
+            aspect-ratio: 1; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; position: relative; background: rgba(255,255,255,0.02); font-weight: 600;
         }
-        .day:hover:not(.empty) { background: rgba(59, 130, 246, 0.1); border-color: var(--accent); transform: translateY(-2px); }
-        .day.selected { background: var(--accent) !important; color: white !important; box-shadow: 0 0 15px var(--accent); }
-        
-        .visit-count {
-            position: absolute; top: 8px; right: 8px;
-            background: var(--accent); color: white;
-            font-size: 10px; font-weight: 800;
-            min-width: 18px; height: 18px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
+        .day:hover:not(.empty) { background: rgba(59, 130, 246, 0.1); border-color: var(--accent); }
+        .day.has-v { color: var(--accent); border-color: var(--accent); }
+        .day.selected { background: var(--accent) !important; color: white !important; }
+        .count-badge {
+            position: absolute; top: 5px; right: 5px; background: var(--accent);
+            color: white; font-size: 9px; min-width: 16px; height: 16px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
         }
 
-        /* CARDS DE VISITA */
+        /* VISIT CARD */
         .visit-card {
-            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-            border-radius: 20px; padding: 1.5rem; margin-bottom: 1rem;
-            border-left: 6px solid #444; transition: 0.3s;
+            background: rgba(255,255,255,0.03); border-radius: 15px; padding: 1rem; margin-bottom: 10px;
+            border-left: 4px solid #444; border-top: 1px solid rgba(255,255,255,0.05);
         }
-        .visit-card.Preventiva { border-left-color: #8b5cf6; }
-        .visit-card.Corretiva { border-left-color: var(--danger); }
-        
-        .badge {
-            padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase;
-        }
-        .bg-agend { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
-        .bg-concl { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
+        .v-prev { border-left-color: var(--purple); }
+        .v-corr { border-left-color: var(--danger); }
+        .status-pill { font-size: 9px; padding: 3px 7px; border-radius: 5px; font-weight: 800; text-transform: uppercase; border: 1px solid currentColor; }
 
-        /* CONTROLES */
-        .filter-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; margin-bottom: 2rem; }
-        select, input {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white;
-            padding: 1rem; border-radius: 15px; outline: none; transition: 0.3s;
-        }
-        select:focus, input:focus { border-color: var(--accent); background: rgba(255,255,255,0.1); }
-
-        #loading {
-            position: fixed; inset: 0; background: var(--bg); z-index: 2000;
+        #loader { 
+            position: fixed; inset: 0; background: var(--bg); z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        @media (max-width: 1100px) { 
-            .main-layout { grid-template-columns: 1fr; } 
-            .kpi-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
-        }
+        @media (max-width: 1000px) { .dashboard-grid { grid-template-columns: 1fr; } .kpi-row { grid-template-columns: repeat(2, 1fr); } }
     </style>
 </head>
 <body>
 
-<div id="loading">
-    <div style="width: 50px; height: 50px; border: 4px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-    <p style="margin-top: 20px; font-weight: 700; letter-spacing: 2px;">SISTEMA PRO</p>
+<div id="loader">
+    <div style="width:40px; height:40px; border:4px solid #222; border-top-color:var(--accent); border-radius:50%; animation:spin 1s linear infinite"></div>
+    <p style="margin-top:15px; font-weight:600; font-size:0.8rem; letter-spacing:2px">SINCRO DE DADOS...</p>
 </div>
 
 <nav>
-    <div class="nav-content">
-        <div style="font-weight: 800; font-size: 1.2rem; color: var(--accent);">V-TECH <span style="color: white;">DASHBOARD</span></div>
-        <div class="nav-links">
-            <button class="active" onclick="switchTab('agenda', this)">📅 CALENDÁRIO</button>
-            <button onclick="switchTab('tecnico', this)">👨‍🔧 TÉCNICOS</button>
-            <button onclick="switchTab('escola', this)">🏫 UNIDADES</button>
+    <div class="nav-container">
+        <div style="font-weight:900; color:var(--accent)">TECH<span style="color:#fff">VISIT</span></div>
+        <div class="nav-btns">
+            <button class="active" onclick="tab('agenda', this)">CALENDÁRIO</button>
+            <button onclick="tab('tecnico', this)">TÉCNICOS</button>
+            <button onclick="tab('escola', this)">ESCOLAS</button>
         </div>
     </div>
 </nav>
 
-<div class="container-fluid">
-    <div class="kpi-grid">
-        <div class="kpi-card kpi-total">
-            <span class="kpi-label">Total Geral</span>
-            <span class="kpi-value" id="val-total">0</span>
-        </div>
-        <div class="kpi-card kpi-agend">
-            <span class="kpi-label">Agendadas</span>
-            <span class="kpi-value" id="val-agend" style="color: var(--warning)">0</span>
-        </div>
-        <div class="kpi-card kpi-concl">
-            <span class="kpi-label">Concluídas</span>
-            <span class="kpi-value" id="val-concl" style="color: var(--success)">0</span>
-        </div>
-        <div class="kpi-card kpi-prev">
-            <span class="kpi-label">Preventivas</span>
-            <span class="kpi-value" id="val-prev" style="color: #8b5cf6">0</span>
-        </div>
-        <div class="kpi-card kpi-corr">
-            <span class="kpi-label">Corretivas</span>
-            <span class="kpi-value" id="val-corr" style="color: var(--danger)">0</span>
-        </div>
+<div class="content">
+    <div class="kpi-row">
+        <div class="kpi-card" style="border-top-color: var(--accent)"><span class="kpi-label">Total</span><span class="kpi-val" id="k-tot">0</span></div>
+        <div class="kpi-card" style="border-top-color: var(--warning)"><span class="kpi-label">Agendadas</span><span class="kpi-val" id="k-age" style="color:var(--warning)">0</span></div>
+        <div class="kpi-card" style="border-top-color: var(--success)"><span class="kpi-label">Concluídas</span><span class="kpi-val" id="k-con" style="color:var(--success)">0</span></div>
+        <div class="kpi-card" style="border-top-color: var(--purple)"><span class="kpi-label">Preventivas</span><span class="kpi-val" id="k-pre" style="color:var(--purple)">0</span></div>
+        <div class="kpi-card" style="border-top-color: var(--danger)"><span class="kpi-label">Corretivas</span><span class="kpi-val" id="k-cor" style="color:var(--danger)">0</span></div>
     </div>
 
-    <section id="agenda" class="tab-content">
-        <div class="main-layout">
-            <div class="glass-panel">
-                <div class="cal-header">
-                    <button onclick="changeMonth(-1)" style="color:white; background:none; border:none; cursor:pointer; font-size: 1.5rem;">❮</button>
-                    <h2 id="monthLabel" style="margin:0; font-weight: 800; text-transform: uppercase;"></h2>
-                    <button onclick="changeMonth(1)" style="color:white; background:none; border:none; cursor:pointer; font-size: 1.5rem;">❯</button>
+    <section id="agenda" class="tabs">
+        <div class="dashboard-grid">
+            <div class="panel">
+                <div class="cal-head">
+                    <button onclick="moveMonth(-1)" style="color:#fff; background:none; border:none; cursor:pointer">❮</button>
+                    <h3 id="mName" style="margin:0; text-transform:uppercase; font-size:1rem"></h3>
+                    <button onclick="moveMonth(1)" style="color:#fff; background:none; border:none; cursor:pointer">❯</button>
                 </div>
-                <div class="cal-grid" id="calendar"></div>
+                <div class="cal-grid" id="cal"></div>
             </div>
-            
-            <div class="glass-panel">
-                <h3 id="detailTitle" style="margin-top:0; font-size: 1rem; color: var(--text-dim);">SELECIONE UM DIA</h3>
-                <div id="dayList">
-                    <p style="color: var(--text-dim); font-size: 0.9rem;">Clique em um dia no calendário para ver os detalhes das visitas agendadas.</p>
-                </div>
+            <div class="panel">
+                <h4 id="detDate" style="margin:0 0 1rem 0; color:var(--text-dim); font-size:0.8rem">SELECIONE UM DIA</h4>
+                <div id="detList"></div>
             </div>
         </div>
     </section>
 
-    <section id="tecnico" class="tab-content" style="display:none">
-        <div class="glass-panel">
-            <div class="filter-row">
-                <select id="selTecnico"></select>
-                <input type="text" id="searchEsc" placeholder="🔍 Buscar por nome da escola...">
-                <button onclick="window.print()" style="background: white; color: black; border: none; padding: 0 20px; border-radius: 12px; font-weight: 800; cursor: pointer;">PDF</button>
+    <section id="tecnico" class="tabs" style="display:none">
+        <div class="panel">
+            <div style="display:flex; gap:10px; margin-bottom:20px">
+                <select id="sTec" style="flex:1; background:#111; color:#fff; border:1px solid #333; padding:10px; border-radius:10px"></select>
+                <input type="text" id="iBusca" placeholder="Buscar escola..." style="flex:1; background:#111; color:#fff; border:1px solid #333; padding:10px; border-radius:10px">
             </div>
-            <div id="tecList"></div>
-            <div style="height: 300px; margin-top: 3rem;">
-                <canvas id="tecChart"></canvas>
-            </div>
+            <div id="tList"></div>
+            <div style="height:300px; margin-top:2rem"><canvas id="tChart"></canvas></div>
         </div>
     </section>
 
-    <section id="escola" class="tab-content" style="display:none">
-        <div class="glass-panel">
-            <select id="selEscola" style="width: 100%; margin-bottom: 2rem;"></select>
-            <div id="escHistory"></div>
+    <section id="escola" class="tabs" style="display:none">
+        <div class="panel">
+            <select id="sEsc" style="width:100%; background:#111; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; margin-bottom:20px"></select>
+            <div id="eHist"></div>
         </div>
     </section>
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxbDpoifeIgJn7ciehq2WIMpPRt-8fYKL3LcrWRIqzz_RSUOwJwD5E_GEIpO-1rLKM/exec";
+const URL = "https://script.google.com/macros/s/AKfycbxbDpoifeIgJn7ciehq2WIMpPRt-8fYKL3LcrWRIqzz_RSUOwJwD5E_GEIpO-1rLKM/exec";
 
-let rawData = [];
-let viewDate = new Date();
+let db = [];
+let curDate = new Date();
 let chart = null;
 
-async function start() {
+async function load() {
     try {
-        const res = await fetch(API_URL);
-        const data = await res.json();
-        // Limpeza absoluta das 500 linhas
-        rawData = data.filter(r => r.escola && r.escola.toString().trim() !== "");
-        
-        document.getElementById('loading').style.display = 'none';
+        const r = await fetch(URL);
+        const d = await r.json();
+        // Filtro robusto para ignorar as 500 linhas vazias
+        db = d.filter(x => x.escola && x.escola.toString().trim() !== "");
+        document.getElementById('loader').style.display = 'none';
         initFilters();
-        refresh();
+        update();
     } catch (e) {
-        alert("Erro ao conectar com a planilha.");
+        document.getElementById('loader').innerHTML = "<p>Erro na Planilha. Verifique as datas.</p>";
     }
 }
 
-function refresh() {
-    // Atualizar os 5 KPIs
-    document.getElementById('val-total').innerText = rawData.length;
-    document.getElementById('val-agend').innerText = rawData.filter(r => r.status === 'Agendada').length;
-    document.getElementById('val-concl').innerText = rawData.filter(r => r.status === 'Concluída').length;
-    document.getElementById('val-prev').innerText = rawData.filter(r => r.tipo === 'Preventiva').length;
-    document.getElementById('val-corr').innerText = rawData.filter(r => r.tipo === 'Corretiva').length;
-
-    renderCalendar();
-    renderTecList();
+function update() {
+    document.getElementById('k-tot').innerText = db.length;
+    document.getElementById('k-age').innerText = db.filter(x => x.status === 'Agendada').length;
+    document.getElementById('k-con').innerText = db.filter(x => x.status === 'Concluída').length;
+    document.getElementById('k-pre').innerText = db.filter(x => x.tipo === 'Preventiva').length;
+    document.getElementById('k-cor').innerText = db.filter(x => x.tipo === 'Corretiva').length;
+    renderCal();
     renderChart();
+    renderTec();
 }
 
-function renderCalendar() {
-    const grid = document.getElementById('calendar');
-    grid.innerHTML = '';
-    const y = viewDate.getFullYear();
-    const m = viewDate.getMonth();
-    const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-    document.getElementById('monthLabel').innerText = `${months[m]} ${y}`;
+function renderCal() {
+    const g = document.getElementById('cal'); g.innerHTML = '';
+    const y = curDate.getFullYear(), m = curDate.getMonth();
+    const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+    document.getElementById('mName').innerText = `${months[m]} ${y}`;
 
     const first = new Date(y, m, 1).getDay();
-    const last = new Date(y, m + 1, 0).getDate();
+    const last = new Date(y, m+1, 0).getDate();
 
-    for (let i = 0; i < first; i++) grid.innerHTML += '<div class="day empty" style="opacity:0"></div>';
-
-    for (let d = 1; d <= last; d++) {
+    for(let i=0; i<first; i++) g.innerHTML += '<div class="day empty" style="border:none; background:none"></div>';
+    
+    for(let d=1; d<=last; d++) {
         const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const visits = rawData.filter(v => v.data === dStr);
-        
+        const vits = db.filter(x => x.data === dStr);
         const dayEl = document.createElement('div');
-        dayEl.className = 'day';
-        dayEl.innerHTML = `<b>${d}</b>`;
-        
-        if(visits.length > 0) {
-            dayEl.classList.add('has-visit');
-            dayEl.innerHTML += `<div class="visit-count">${visits.length}</div>`;
-        }
-
+        dayEl.className = `day ${vits.length ? 'has-v' : ''}`;
+        dayEl.innerHTML = d + (vits.length ? `<div class="count-badge">${vits.length}</div>` : '');
         dayEl.onclick = () => {
-            document.querySelectorAll('.day').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('.day').forEach(e => e.classList.remove('selected'));
             dayEl.classList.add('selected');
-            showDay(dStr, visits);
+            showDay(dStr, vits);
         };
-        grid.appendChild(dayEl);
+        g.appendChild(dayEl);
     }
 }
 
 function showDay(date, list) {
-    document.getElementById('detailTitle').innerText = `VISITAS EM ${date.split('-').reverse().join('/')}`;
-    const listCont = document.getElementById('dayList');
-    listCont.innerHTML = list.length ? list.map(cardTemplate).join('') : '<p>Nenhuma visita agendada.</p>';
-}
-
-function cardTemplate(v) {
-    return `
-        <div class="visit-card ${v.tipo}">
-            <div style="display:flex; justify-content:space-between; align-items:start">
-                <div>
-                    <div style="font-weight:800; font-size:1.1rem;">${v.escola}</div>
-                    <div style="color:var(--text-dim); font-size:0.8rem; margin-top:4px">📍 ${v.municipio}</div>
-                </div>
-                <span class="badge ${v.status === 'Agendada' ? 'bg-agend' : 'bg-concl'}">${v.status}</span>
+    document.getElementById('detDate').innerText = `VISITAS EM ${date.split('-').reverse().join('/')}`;
+    document.getElementById('detList').innerHTML = list.map(v => `
+        <div class="visit-card ${v.tipo === 'Preventiva' ? 'v-prev' : 'v-corr'}">
+            <div style="display:flex; justify-content:space-between">
+                <b style="font-size:0.9rem">${v.escola}</b>
+                <span class="status-pill" style="color:${v.status === 'Agendada' ? 'var(--warning)' : 'var(--success)'}">${v.status}</span>
             </div>
-            <div style="margin-top:1.2rem; display:flex; justify-content:space-between; font-size:0.8rem; border-top:1px solid rgba(255,255,255,0.05); padding-top:10px">
-                <span style="color:var(--accent); font-weight:700">👨‍🔧 ${v.tecnico}</span>
-                <span style="font-weight:700">${v.tipo}</span>
-            </div>
+            <div style="margin-top:8px; font-size:0.75rem; color:var(--text-dim)">👨‍🔧 ${v.tecnico} | ${v.tipo}</div>
         </div>
-    `;
+    `).join('') || '<p>Sem registros.</p>';
 }
 
 function renderChart() {
-    const ctx = document.getElementById('tecChart').getContext('2d');
+    const c = document.getElementById('tChart'); if(!c) return;
     if(chart) chart.destroy();
-    
-    const tecs = [...new Set(rawData.map(r => r.tecnico))].filter(t => t);
-    chart = new Chart(ctx, {
+    const tks = [...new Set(db.map(x => x.tecnico))].filter(t => t);
+    chart = new Chart(c, {
         type: 'bar',
         data: {
-            labels: tecs,
+            labels: tks,
             datasets: [
-                { label: 'Concluídas', data: tecs.map(t => rawData.filter(r => r.tecnico === t && r.status === 'Concluída').length), backgroundColor: '#10b981' },
-                { label: 'Agendadas', data: tecs.map(t => rawData.filter(r => r.tecnico === t && r.status === 'Agendada').length), backgroundColor: '#3b82f6' }
+                { label: 'Concluída', data: tks.map(t => db.filter(x => x.tecnico === t && x.status === 'Concluída').length), backgroundColor: '#10b981' },
+                { label: 'Agendada', data: tks.map(t => db.filter(x => x.tecnico === t && x.status === 'Agendada').length), backgroundColor: '#3b82f6' }
             ]
         },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: '#94a3b8', font: { weight: 'bold' } } } },
-            scales: {
-                x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
-                y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
-            }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#94a3b8' } } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } } }
     });
 }
 
 function initFilters() {
-    const tecs = [...new Set(rawData.map(r => r.tecnico))].filter(t => t).sort();
-    const escs = [...new Set(rawData.map(r => r.escola))].filter(e => e).sort();
-
-    document.getElementById('selTecnico').innerHTML = '<option value="">👨‍🔧 Todos os Técnicos</option>' + tecs.map(t => `<option>${t}</option>`).join('');
-    document.getElementById('selEscola').innerHTML = '<option value="">🏫 Selecionar Unidade Escolar</option>' + escs.map(e => `<option>${e}</option>`).join('');
-    
-    document.getElementById('selTecnico').onchange = renderTecList;
-    document.getElementById('searchEsc').oninput = renderTecList;
-    document.getElementById('selEscola').onchange = renderEscHistory;
+    const tks = [...new Set(db.map(x => x.tecnico))].filter(t => t).sort();
+    const ecs = [...new Set(db.map(x => x.escola))].filter(e => e).sort();
+    document.getElementById('sTec').innerHTML = '<option value="">Todos Técnicos</option>' + tks.map(t => `<option>${t}</option>`).join('');
+    document.getElementById('sEsc').innerHTML = '<option value="">Selecionar Escola...</option>' + ecs.map(e => `<option>${e}</option>`).join('');
+    document.getElementById('sTec').onchange = renderTec;
+    document.getElementById('iBusca').oninput = renderTec;
+    document.getElementById('sEsc').onchange = renderEsc;
 }
 
-function renderTecList() {
-    const tec = document.getElementById('selTecnico').value;
-    const search = document.getElementById('searchEsc').value.toLowerCase();
-    const list = rawData.filter(r => (!tec || r.tecnico === tec) && r.escola.toLowerCase().includes(search));
-    document.getElementById('tecList').innerHTML = list.map(cardTemplate).join('');
+function renderTec() {
+    const t = document.getElementById('sTec').value, b = document.getElementById('iBusca').value.toLowerCase();
+    const l = db.filter(x => (!t || x.tecnico === t) && x.escola.toLowerCase().includes(b));
+    document.getElementById('tList').innerHTML = l.slice(0, 10).map(x => `<div style="padding:10px; border-bottom:1px solid #222; font-size:0.8rem">${x.escola} - ${x.status}</div>`).join('');
 }
 
-function renderEscHistory() {
-    const esc = document.getElementById('selEscola').value;
-    const list = rawData.filter(r => r.escola === esc);
-    document.getElementById('escHistory').innerHTML = list.map(cardTemplate).join('');
+function renderEsc() {
+    const e = document.getElementById('sEsc').value;
+    const l = db.filter(x => x.escola === e);
+    document.getElementById('eHist').innerHTML = l.map(x => `<div style="padding:10px; border-bottom:1px solid #222">${x.data} - ${x.tipo} - ${x.status}</div>`).join('');
 }
 
-function switchTab(id, btn) {
-    document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+function tab(id, b) {
+    document.querySelectorAll('.tabs').forEach(t => t.style.display = 'none');
+    document.querySelectorAll('nav button').forEach(x => x.classList.remove('active'));
     document.getElementById(id).style.display = 'block';
-    btn.classList.add('active');
+    b.classList.add('active');
 }
 
-function changeMonth(dir) {
-    viewDate.setMonth(viewDate.getMonth() + dir);
-    renderCalendar();
-}
+function moveMonth(n) { curDate.setMonth(curDate.getMonth() + n); renderCal(); }
 
-@keyframes spin { to { transform: rotate(360deg); } }
-
-start();
+window.onload = load;
 </script>
+<style> @keyframes spin { to { transform: rotate(360deg); } } </style>
 </body>
 </html>
