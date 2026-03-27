@@ -174,8 +174,8 @@
         .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; padding: 10px; }
         .pg-btn { background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.75rem; transition: 0.3s; }
         
-        .filter-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; margin-bottom: 1.5rem; }
-        select, input { background: var(--input-bg) !important; border: 1px solid var(--border) !important; color: var(--text-main) !important; padding: 0.8rem; border-radius: 12px; outline: none; }
+        .filter-row { display: grid; grid-template-columns: 1.2fr 1.2fr 1fr auto; gap: 12px; margin-bottom: 1.5rem; }
+        select, input { background: var(--input-bg) !important; border: 1px solid var(--border) !important; color: var(--text-main) !important; padding: 0.8rem; border-radius: 12px; outline: none; width: 100%; }
         
         #loader { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -185,6 +185,7 @@
             .kpi-container { flex-direction: column; }
             .kpi-row { flex-direction: column; }
             .kpi-group { min-width: 100%; }
+            .filter-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -278,6 +279,7 @@
             <div class="filter-row">
                 <select id="sTec"></select>
                 <input type="text" id="iBusca" placeholder="Pesquisar unidade...">
+                <input type="date" id="iDataFiltro">
                 <button onclick="window.print()" style="background:var(--accent); color:#fff; border:none; padding:0 15px; border-radius:10px; font-weight:800; cursor:pointer; font-size:0.8rem">PDF</button>
             </div>
             <div id="tList"></div>
@@ -352,10 +354,12 @@ function refresh() {
 
 function itemTemplate(v) {
     const dataFormatada = v.data ? v.data.split('-').reverse().join('/') : '---';
+    const numChamado = v.chamado || '---';
     return `<div class="visit-item ${v.tipo}">
         <div style="display:flex; justify-content:space-between; align-items:start">
             <div>
                 <div style="font-weight:800; font-size:1.05rem; color:var(--accent)">${v.escola}</div>
+                <div style="font-size:0.75rem; color:var(--text-main); margin-top:2px; font-weight:700">🎫 Chamado: ${numChamado}</div>
                 <div style="color:var(--text-dim); font-size:0.75rem; margin-top:4px">📍 ${v.municipio} | 📅 ${dataFormatada}</div>
             </div>
             <span style="font-size:9px; font-weight:800; color:${v.status === 'Agendada' ? 'var(--warning)' : 'var(--success)'}; border: 1px solid currentColor; padding: 2px 6px; border-radius:4px">${v.status.toUpperCase()}</span>
@@ -394,8 +398,17 @@ function showDay(date, list) {
 }
 
 function renderTec() {
-    const t = document.getElementById('sTec').value, b = document.getElementById('iBusca').value.toLowerCase();
-    const filtered = db.filter(r => (!t || r.tecnico === t) && r.escola.toLowerCase().includes(b));
+    const t = document.getElementById('sTec').value;
+    const b = document.getElementById('iBusca').value.toLowerCase();
+    const d = document.getElementById('iDataFiltro').value; // Valor vem como YYYY-MM-DD
+    
+    const filtered = db.filter(r => {
+        const matchTec = !t || r.tecnico === t;
+        const matchBusca = r.escola.toLowerCase().includes(b);
+        const matchData = !d || r.data === d;
+        return matchTec && matchBusca && matchData;
+    });
+
     const start = (tPage - 1) * pageSize;
     const paginated = filtered.slice(start, start + pageSize);
     document.getElementById('tList').innerHTML = paginated.map(itemTemplate).join('');
@@ -454,8 +467,13 @@ function setupFilters() {
     const escs = [...new Set(db.map(r => r.escola))].filter(e => e).sort();
     document.getElementById('sTec').innerHTML = '<option value="">Todos Técnicos</option>' + tecs.map(t => `<option>${t}</option>`).join('');
     document.getElementById('sEsc').innerHTML = '<option value="">Selecionar Escola...</option>' + escs.map(e => `<option>${e}</option>`).join('');
+    
+    // Eventos para filtros de Técnicos
     document.getElementById('sTec').onchange = () => { tPage = 1; renderTec(); };
     document.getElementById('iBusca').oninput = () => { tPage = 1; renderTec(); };
+    document.getElementById('iDataFiltro').onchange = () => { tPage = 1; renderTec(); };
+    
+    // Evento para filtros de Escolas
     document.getElementById('sEsc').onchange = () => { ePage = 1; renderEsc(); };
 }
 
