@@ -2,67 +2,130 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Relatório de Visita Técnica - URE de Caieiras</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-body{
-    background: linear-gradient(135deg,#eef4ff,#f8fbff);
-    font-family: "Segoe UI";
-    color:#24324a;
+/* Definição de Variáveis de Cores */
+:root {
+    --bg-body: linear-gradient(135deg,#eef4ff,#f8fbff);
+    --bg-card: #ffffff;
+    --text-main: #24324a;
+    --text-title: #1e3a5f;
+    --border-color: rgba(31,61,115,0.1);
+    --input-bg: #ffffff;
+    --input-text: #24324a;
 }
 
-.container{ max-width: 1000px; }
-
-.header{text-align:center;margin-bottom:20px;}
-.header h3{font-weight:700;color:#1e3a5f;}
-
-.section-card{
-    background:#fff;
-    border-radius:18px;
-    padding:18px;
-    margin-bottom:15px;
-    box-shadow:0 8px 25px rgba(31,61,115,0.08);
+/* Cores do Modo Escuro */
+body.dark-mode {
+    --bg-body: #121212;
+    --bg-card: #1e1e1e;
+    --text-main: #e0e0e0;
+    --text-title: #bb86fc;
+    --border-color: #333;
+    --input-bg: #2d2d2d;
+    --input-text: #ffffff;
 }
 
-.section-title{
-    font-weight:700;
-    margin-bottom:10px;
-    color:#24446b;
+body {
+    background: var(--bg-body);
+    background-attachment: fixed;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-main);
+    transition: all 0.3s ease;
 }
 
-textarea{min-height:120px;}
-.form-check{margin-bottom:6px;}
+.container { max-width: 900px; }
 
-.btn{
-    border-radius:12px;
-    font-weight:600;
-    padding:10px 18px;
+.header { text-align:center; margin-bottom:30px; margin-top: 20px; }
+.header h3 { font-weight:700; color: var(--text-title); }
+
+.section-card {
+    background: var(--bg-card);
+    border-radius: 18px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease, background 0.3s ease;
 }
 
-.erro{
-    border:2px solid #dc3545 !important;
+.section-card:hover {
+    transform: translateY(-2px);
+}
+
+.section-title {
+    font-weight: 700;
+    margin-bottom: 15px;
+    display: block;
+    color: var(--text-title);
+    font-size: 1.1rem;
+}
+
+/* Customização de Inputs para Modo Escuro */
+.form-control, .form-select {
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    border: 1px solid var(--border-color);
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    filter: brightness(1.1);
+}
+
+textarea { min-height: 120px; }
+.form-check { margin-bottom: 8px; }
+
+.btn {
+    border-radius: 12px;
+    font-weight: 600;
+    padding: 12px 24px;
+    transition: all 0.3s;
+}
+
+.erro {
+    border: 2px solid #dc3545 !important;
+}
+
+/* Botão de Alternar Tema */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    cursor: pointer;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 </style>
 </head>
 
 <body>
 
-<div class="container py-4">
-
-<div id="relatorio">
-
-<div class="header">
-    <h3>📋 Relatório de Visita Técnica - URE de Caieiras</h3>
+<div class="theme-toggle" onclick="toggleDarkMode()" title="Alternar Modo Claro/Escuro">
+    <span id="theme-icon">🌙</span>
 </div>
 
-<!-- ESCOLA -->
-<div class="section-card">
-<label class="section-title">🏫 Escola</label>
-<select class="form-select obrigatorio" id="escola">
-<option>Selecione...</option>
+<div class="container py-4">
+
+    <div id="relatorio">
+        <div class="header">
+            <h3>📋 Relatório de Visita Técnica - URE de Caieiras</h3>
+        </div>
+
+        <div class="section-card">
+            <label class="section-title">🏫 Escola</label>
+            <select class="form-select obrigatorio" id="escola">
+                <option value="">Selecione...</option>
 <option>Escola Estadual Adail Jarbas Duclos</option>
 <option>Escola Estadual Afonso Moreno</option>
 <option>Escola Estadual Aladino Polon</option>
@@ -130,83 +193,105 @@ textarea{min-height:120px;}
 <option>Escola Estadual Walter Ribas de Andrade Prof.</option>
 <option>Escola Estadual Walther Weiszflog</option>
 <option>Escola Estadual Zilton Bicudo Prof.</option>
-<!-- (mantive reduzido aqui, mas você pode colar sua lista completa normalmente) -->
-</select>
-</div>
+                </select>
+        </div>
 
-<!-- DEPENDÊNCIAS -->
-<div class="section-card">
-<label class="section-title">🏢 Dependências</label>
+        <div class="section-card">
+            <label class="section-title">🏢 Dependências</label>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Direção</div>
+                    <div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Secretaria</div>
+                    <div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Coordenação</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Sala dos Professores</div>
+                    <div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Sala de Informática</div>
+                    <div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Sala de Leitura</div>
+                </div>
+            </div>
+            <input type="text" id="outro" class="form-control mt-3" placeholder="Outro (descrever)">
+        </div>
 
-<div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Direção</div>
-<div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Secretaria</div>
-<div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Coordenação</div>
-<div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Sala dos Professores</div>
-<div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Sala de Informática</div>
-<div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Sala de Leitura</div>
+        <div class="section-card">
+            <label class="section-title">🛠️ Itens Verificados</label>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-check"><input class="form-check-input item" type="checkbox"> Access Points</div>
+                    <div class="form-check"><input class="form-check-input item" type="checkbox"> Notebooks</div>
+                    <div class="form-check"><input class="form-check-input item" type="checkbox"> Tablets</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-check"><input class="form-check-input item" type="checkbox"> Câmeras</div>
+                    <div class="form-check"><input class="form-check-input item" type="checkbox"> Banda de internet</div>
+                    <div class="form-check"><input class="form-check-input item" type="checkbox"> Racks e Switches</div>
+                </div>
+            </div>
+        </div>
 
-<input type="text" id="outro" class="form-control mt-2" placeholder="Outro (descrever)">
-</div>
+        <div class="section-card">
+            <label class="section-title">⚠️ Defeitos</label>
+            <textarea class="form-control obrigatorio" placeholder="Descreva os problemas encontrados..."></textarea>
+        </div>
 
-<!-- ITENS -->
-<div class="section-card">
-<label class="section-title">🛠️ Itens</label>
+        <div class="section-card">
+            <label class="section-title">📝 Soluções</label>
+            <textarea class="form-control obrigatorio" placeholder="Descreva as ações tomadas ou orientações dadas..."></textarea>
+        </div>
 
-<div class="form-check"><input class="form-check-input item" type="checkbox"> Access Points</div>
-<div class="form-check"><input class="form-check-input item" type="checkbox"> Notebooks</div>
-<div class="form-check"><input class="form-check-input item" type="checkbox"> Tablets</div>
-<div class="form-check"><input class="form-check-input item" type="checkbox"> Espelhamento das câmeras</div>
-<div class="form-check"><input class="form-check-input item" type="checkbox"> Banda de internet</div>
-<div class="form-check"><input class="form-check-input item" type="checkbox"> Racks e Switches</div>
-</div>
+        <div class="section-card">
+            <label class="section-title">📸 Registro Fotográfico</label>
+            <input type="file" id="fotos" class="form-control" multiple accept="image/*">
+        </div>
 
-<!-- DEFEITOS -->
-<div class="section-card">
-<label class="section-title">⚠️ Defeitos</label>
-<textarea class="form-control obrigatorio"></textarea>
-</div>
+        <div class="section-card">
+            <label class="section-title">👨‍🔧 Técnico Responsável</label>
+            <select class="form-select obrigatorio" id="tecnico">
+                <option value="">Selecione...</option>
+                <option>Felipe Teles Parra</option>
+                <option>Samuel Silva Santos</option>
+                <option>Jaqueline Bieging de Oliveira Jacino</option>
+                <option>Brandon Ken Honda</option>
+                <option>Alexandre Vinicius Martins da Silva</option>
+                <option>José Roberto</option>
+                <option>José Luiz</option>
+            </select>
+        </div>
+    </div>
 
-<!-- SOLUÇÕES -->
-<div class="section-card">
-<label class="section-title">📝 Soluções</label>
-<textarea class="form-control obrigatorio"></textarea>
-</div>
-
-<!-- FOTOS -->
-<div class="section-card">
-<label class="section-title">📸 Fotos</label>
-<input type="file" id="fotos" class="form-control" multiple accept="image/*">
-</div>
-
-<!-- TÉCNICO -->
-<div class="section-card">
-<label class="section-title">👨‍🔧 Técnico</label>
-<select class="form-select obrigatorio" id="tecnico">
-<option>Selecione...</option>
-<option>Felipe Teles Parra</option>
-<option>Samuel Silva Santos</option>
-<option>Jaqueline Bieging de Oliveira Jacino</option>
-<option>Brandon Ken Honda</option>
-<option>Alexandre Vinicius Martins da Silva</option>
-<option>José Roberto</option>
-<option>José Luis</option>
-</select>
-</div>
-
-</div>
-
-<div class="text-center mt-4">
-<button class="btn btn-primary" onclick="gerarPDF()">📄 Gerar PDF</button>
-<button class="btn btn-success" onclick="abrirDrive()">📂 Abrir Drive</button>
-</div>
+    <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4 mb-5">
+        <button class="btn btn-primary shadow" onclick="gerarPDF()">📄 Gerar Relatório PDF</button>
+        <button class="btn btn-success shadow" onclick="abrirDrive()">📂 Acessar Drive do Mês</button>
+    </div>
 
 </div>
 
 <script>
+// Lógica do Modo Escuro
+function toggleDarkMode() {
+    const body = document.body;
+    const icon = document.getElementById("theme-icon");
+    
+    body.classList.toggle("dark-mode");
+    
+    if (body.classList.contains("dark-mode")) {
+        icon.innerText = "☀️";
+        localStorage.setItem("theme", "dark");
+    } else {
+        icon.innerText = "🌙";
+        localStorage.setItem("theme", "light");
+    }
+}
+
+// Persistência do tema ao recarregar
+if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark-mode");
+    document.getElementById("theme-icon").innerText = "☀️";
+}
+
+// MANTENDO TODA A SUA LÓGICA ORIGINAL ABAIXO
 async function gerarPDF(){
-
     let valido = true;
-
     document.querySelectorAll(".erro").forEach(el => el.classList.remove("erro"));
 
     document.querySelectorAll(".obrigatorio").forEach(el => {
@@ -217,7 +302,6 @@ async function gerarPDF(){
     });
 
     const algumCheck = document.querySelectorAll(".dependencia:checked, .item:checked").length;
-
     if(algumCheck === 0){
         alert("Selecione ao menos um item ou dependência.");
         return;
@@ -230,27 +314,28 @@ async function gerarPDF(){
 
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF();
-
     const escola = document.getElementById("escola").value;
     const tecnico = document.getElementById("tecnico").value;
     const outro = document.getElementById("outro").value;
-
     const textareas = document.querySelectorAll("textarea");
     const defeitos = textareas[0].value;
     const solucoes = textareas[1].value;
 
     const dependencias = [...document.querySelectorAll(".dependencia:checked")]
         .map(c => c.parentElement.innerText.trim());
-
     if(outro) dependencias.push("Outro: " + outro);
 
     const itens = [...document.querySelectorAll(".item:checked")]
         .map(c => c.parentElement.innerText.trim());
 
     let y = 15;
-
-    function checkPage(){
-        if(y > 260){ pdf.addPage(); y = 15; }
+    function checkPage(neededHeight = 0){ 
+        if(y + neededHeight > 275){ 
+            pdf.addPage(); 
+            y = 20; 
+            return true;
+        }
+        return false;
     }
 
     function tituloCentro(txt){
@@ -261,40 +346,40 @@ async function gerarPDF(){
     }
 
     function caixa(titulo, texto){
-
-        checkPage();
-
         const padding = 3;
         const lineHeight = 5;
+        const larguraUtil = 180;
         
         pdf.setFont("helvetica","bold");
         pdf.setFontSize(10);
-        pdf.text(titulo,12,y);
-        y+=5;
         
-        // ⚠️ FORÇA reset completo antes do texto
+        const linhas = pdf.splitTextToSize(texto || "-", larguraUtil);
+        const alturaBox = (linhas.length * lineHeight) + (padding * 2);
+        
+        // Verifica se a caixa inteira cabe, se não, pula página
+        checkPage(alturaBox + 10);
+
+        pdf.text(titulo, 12, y);
+        y += 4;
+        
         pdf.setFont("helvetica","normal");
-        pdf.setFontSize(10);
+        pdf.setDrawColor(180);
+        pdf.rect(10, y - 1, 190, alturaBox);
         
-        const linhas = pdf.splitTextToSize(texto || "-",180);
-        const altura = (linhas.length * lineHeight) + (padding * 2);
-        
-        pdf.setDrawColor(150);
-        pdf.rect(10,y-padding,190,altura);
-        
-        linhas.forEach((linha,i)=>{
-            pdf.text(linha,12,y + (i * lineHeight));
+        linhas.forEach((linha, i) => {
+            pdf.text(linha, 12, y + padding + (i * lineHeight));
         });
 
-        y += altura + 6;
+        y += alturaBox + 8;
     }
 
+    // --- Início do Conteúdo ---
     tituloCentro("GOVERNO DO ESTADO DE SÃO PAULO");
     tituloCentro("Secretaria da Educação");
     tituloCentro("RELATÓRIO DE VISITA TÉCNICA - URE de CAIEIRAS");
-
-    pdf.line(10,y,200,y);
-    y+=8;
+    pdf.setDrawColor(0);
+    pdf.line(10, y, 200, y);
+    y += 10;
 
     caixa("Escola:", escola);
     caixa("Técnico:", tecnico);
@@ -303,27 +388,67 @@ async function gerarPDF(){
     caixa("Defeitos Encontrados:", defeitos);
     caixa("Soluções / Orientações:", solucoes);
 
+    // --- Fotos ---
     const files = document.getElementById("fotos").files;
-
     if(files.length > 0){
         pdf.addPage();
-        y = 15;
-
+        y = 20;
         tituloCentro("REGISTRO FOTOGRÁFICO");
+        y += 10;
 
-        for(let i=0; i<files.length; i++){
+        for(let i = 0; i < files.length; i++){
             const base64 = await toBase64(files[i]);
+            const dim = await getImageDimensions(base64);
+            
+            // Calcula largura e altura proporcional (Max 170mm de largura)
+            const maxWidth = 170;
+            const imgWidth = maxWidth;
+            const imgHeight = (dim.h * maxWidth) / dim.w;
 
-            checkPage();
-            pdf.addImage(base64,"JPEG",15,y,180,100);
-            y += 110;
+            // Se a imagem for muito alta e não couber na página, reduz ela
+            let finalHeight = imgHeight;
+            let finalWidth = imgWidth;
+            if (finalHeight > 220) {
+                finalHeight = 220;
+                finalWidth = (dim.w * 220) / dim.h;
+            }
+
+            // Verifica se tem espaço na página atual, senão pula
+            checkPage(finalHeight + 10);
+
+            // Centraliza a imagem horizontalmente
+            const xCentrado = (210 - finalWidth) / 2;
+            
+            pdf.setDrawColor(200);
+            pdf.rect(xCentrado - 1, y - 1, finalWidth + 2, finalHeight + 2); // Moldura
+            pdf.addImage(base64, "JPEG", xCentrado, y, finalWidth, finalHeight);
+            
+            y += finalHeight + 15;
         }
     }
 
-    pdf.setFontSize(9);
-    pdf.text("Data: " + new Date().toLocaleDateString("pt-BR"),10,290);
+    // Rodapé com data e página
+    const pageCount = pdf.internal.getNumberOfPages();
+    for(let i = 1; i <= pageCount; i++) {
+        pdf.setPage(i);
+        pdf.setFontSize(8);
+        pdf.setTextColor(100);
+        pdf.text("Data: " + new Date().toLocaleDateString("pt-BR"), 10, 290);
+        pdf.text("Página " + i + " de " + pageCount, 180, 290);
+    }
 
     pdf.save(`Relatorio_${escola.replace(/ /g,"_")}.pdf`);
+}
+
+// Função auxiliar para pegar o tamanho real da imagem
+function getImageDimensions(file) {
+  return new Promise (function (resolved, rejected) {
+    var i = new Image();
+    i.onload = function(){
+      resolved({w: i.width, h: i.height});
+    };
+    i.src = file;
+  });
 }
 
 function toBase64(file){
@@ -336,10 +461,8 @@ function toBase64(file){
 }
 
 function abrirDrive(){
-
     const hoje = new Date();
     const mes = String(hoje.getMonth() + 1).padStart(2,'0');
-
     const pastas = {
         "01": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgB1H1R67z9bQpm9GvUrFi2rAQdlYzPToUC5U_YZHeBTa_c?e=cWOTXS",
         "02": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgDz5zErJublQbMtbX1uOo62ARuv-cUEewJ_R2gEsQWPcCU?e=A65i1J",
@@ -352,18 +475,15 @@ function abrirDrive(){
         "09": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgBYRhxhfuc0S7bOg768ljDaAXzBrL2NgXZ_Ws0f-RJgP_I?e=R39fVF",
         "10": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgAyK6h4pU_qQ7n65DA4azkFAf2uuNZRZp8s8iDW95aOfnk?e=bgiu3t",
         "11": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgBWo_vtDOYZQI746n-Rng4RAcTusj5tJlP8qd1xrxWenlI?e=vjgtav",
-        "12": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgCLc7V6FILISYz-_XVy2oA0AROGLIEN-k7-Bh7voirMYNA?e=7BNiEe",
-        // restante...
+        "12": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgCLc7V6FILISYz-_XVy2oA0AROGLIEN-k7-Bh7voirMYNA?e=7BNiEe"
     };
 
     if(pastas[mes]){
         window.open(pastas[mes], "_blank");
-        console.log("Abrindo pasta do mês:", mes);
     }else{
         alert("Pasta do mês não configurada.");
     }
 }
-    
 </script>
 
 </body>
