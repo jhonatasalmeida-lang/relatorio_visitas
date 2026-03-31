@@ -112,11 +112,16 @@
         .filter-row { display: grid; grid-template-columns: 1.2fr 1.2fr 1fr auto; gap: 12px; margin-bottom: 1.5rem; }
         select, input { background: var(--input-bg) !important; border: 1px solid var(--border) !important; color: var(--text-main) !important; padding: 0.8rem; border-radius: 12px; outline: none; width: 100%; }
         
+        /* Layout Divisão Técnicos */
+        .tec-layout { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; align-items: start; }
+        .tec-schools-card { background: rgba(59, 130, 246, 0.05); border: 1px solid var(--accent); padding: 20px; border-radius: 20px; position: sticky; top: 100px; }
+        .school-tag { background: var(--input-bg); border: 1px solid var(--border); padding: 8px 12px; border-radius: 10px; font-size: 0.7rem; margin-bottom: 8px; display: block; font-weight: 600; }
+
         #loader { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 1000px) { 
-            .main-grid { grid-template-columns: 1fr; } 
+            .main-grid, .tec-layout { grid-template-columns: 1fr; } 
             .filter-row { grid-template-columns: 1fr !important; }
         }
     </style>
@@ -145,7 +150,6 @@
                 <div class="kpi-card"><span class="kpi-label">Total Geral</span><span class="kpi-value" id="k-tot">0</span></div>
             </div>
         </div>
-
         <div class="kpi-group">
             <div class="group-header">
                 <span class="group-title">🔔 Status do Chamado</span>
@@ -157,7 +161,6 @@
                 <div class="kpi-card" style="border-left-color: var(--success)"><span class="kpi-label">Concluídas</span><span class="kpi-value" id="k-con">0</span></div>
             </div>
         </div>
-
         <div class="kpi-group">
             <div class="group-header"><span class="group-title">🛠️ Tipo de Atendimento</span></div>
             <div class="kpi-row">
@@ -194,9 +197,19 @@
                 <input type="date" id="iDataFiltro">
                 <button onclick="window.print()" style="background:var(--accent); color:#fff; border:none; padding:0 15px; border-radius:10px; font-weight:800; cursor:pointer;">PDF</button>
             </div>
-            <div id="tList"></div>
-            <div class="pagination" id="tPager"></div>
-            <div style="height:250px; margin-top:2rem"><canvas id="chartTec"></canvas></div>
+            
+            <div class="tec-layout">
+                <div id="tContent">
+                    <div id="tList"></div>
+                    <div class="pagination" id="tPager"></div>
+                    <div style="height:250px; margin-top:2rem"><canvas id="chartTec"></canvas></div>
+                </div>
+                
+                <div id="tecSchoolsArea" class="tec-schools-card" style="display:none">
+                    <div style="font-size:0.6rem; font-weight:900; color:var(--accent); text-transform:uppercase; margin-bottom:15px; letter-spacing:1px">🏫 Unidades Vinculadas</div>
+                    <div id="tecSchoolsList"></div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -206,12 +219,10 @@
                 <select id="sEsc"></select>
                 <input type="date" id="iDataEscola">
             </div>
-
             <div id="bannerResponsavel" style="display:none; background:rgba(59, 130, 246, 0.1); border: 1px solid var(--accent); padding: 15px; border-radius: 16px; margin-bottom: 1.5rem;">
                 <div style="font-size: 0.6rem; font-weight: 800; color: var(--accent); text-transform: uppercase;">Técnico Responsável pela Unidade</div>
                 <div id="nomeResponsavelFixo" style="font-size: 1.2rem; font-weight: 800; margin-top: 5px;">---</div>
             </div>
-
             <div id="eHist"></div>
             <div class="pagination" id="ePager"></div>
         </div>
@@ -221,75 +232,8 @@
 <script>
 const URL = "https://script.google.com/macros/s/AKfycbxbDpoifeIgJn7ciehq2WIMpPRt-8fYKL3LcrWRIqzz_RSUOwJwD5E_GEIpO-1rLKM/exec";
 
-// MAPA DE RESPONSÁVEIS FIXO (Baseado na sua imagem)
 const MAPA_RESPONSAVEIS = {
-    "Escola Estadual Adail Jarbas Duclos": "José Roberto",
-    "Escola Estadual Afonso Moreno": "Felipe Teles Parra",
-    "Escola Estadual Aladino Polon": "José Luiz",
-    "Escola Estadual Alberto Graf Capitão": "Alexandre Vinicius Martins da Silva",
-    "Escola Estadual Albino Fiore": "José Luiz",
-    "Escola Estadual Alfried Theodor Weisflog": "Alexandre Vinicius Martins da Silva",
-    "Escola Estadual Ana Maria Garrido Orlandin Profª": "Brandon Ken Honda",
-    "Escola Estadual Aparecido Roberto Tonellotti Prof.": "Samuel Silva Santos",
-    "Escola Estadual Armando Sestini": "Alexandre Vinicius Martins da Silva",
-    "Escola Estadual Arthur Weingrill": "Alexandre Vinicius Martins da Silva",
-    "Escola Estadual Azevedo Soares": "Felipe Teles Parra",
-    "Escola Estadual Bairro do Itaim": "Alexandre Vinicius Martins da Silva",
-    "Escola Estadual Bairro Jundiaizinho": "Jaqueline Bieging de Oliveira Jacino",
-    "Escola Estadual Belém da Serra": "Felipe Teles Parra",
-    "Escola Estadual Benedito Aparecido Tavares Prof.": "José Roberto",
-    "Escola Estadual Benedito Fagundes Marques (BEFAMA)": "José Roberto",
-    "Escola Estadual Bueno de Azevedo Filho Prof.": "Brandon Ken Honda",
-    "Escola Estadual Carlos Augusto de Pádua Fleury Prof.": "Jaqueline Bieging de Oliveira Jacino",
-    "Escola Estadual Celestina Valente Lengenfelder - Profª": "Brandon Ken Honda",
-    "Escola Estadual Chácara Camponesa/ Jd. Vassouras": "Samuel Silva Santos",
-    "Escola Estadual Domingos Cambiaghi Prof.": "Felipe Teles Parra",
-    "Escola Estadual Élcio José Pereira Cotrim Prof.": "Brandon Ken Honda",
-    "Escola Estadual Elvira Parada Manga Profª": "José Roberto",
-    "Escola Estadual Francisco Gonçalves Vieira Prof.": "José Luiz",
-    "Escola Estadual Hermelina de Albuquerque Passarella": "Jaqueline Bieging de Oliveira Jacino",
-    "Escola Estadual Iraci Sartori Vieira da Silva Profª": "Felipe Teles Parra",
-    "Escola Estadual Isaías Luiz Matiazzo": "Alexandre Vinicius Martins da Silva",
-    "Escola Estadual Isaura de Miranda Botto profª": "José Roberto",
-    "Escola Estadual Isaura Valentini Hanser Profª.": "José Luiz",
-    "Escola Estadual Ivone dos Anjos da Silva - Profª.": "Felipe Teles Parra",
-    "Escola Estadual Jardim Alegria II": "Samuel Silva Santos",
-    "Escola Estadual Jardim das Rosas": "Brandon Ken Honda",
-    "Escola Estadual Jardim São Francisco": "Jaqueline Bieging de Oliveira Jacino",
-    "Escola Estadual Jardim Silvia II": "Samuel Silva Santos",
-    "Escola Estadual Joaquim Marques da Silva Sobrinho Tenente": "Brandon Ken Honda",
-    "Escola Estadual Jocimara Vieira da Silva Profª.": "Felipe Teles Parra",
-    "Escola Estadual José Carlos da Silva JR.": "Alexandre Vinicius Martins da Silva",
-    "Escola Estadual José de Barros Martins Editor": "Samuel Silva Santos",
-    "Escola Estadual José parada Prof. (Parque Vitória IV)": "Felipe Teles Parra",
-    "Escola Estadual José Roberto Melchior Dr.": "Jaqueline Bieging de Oliveira Jacino",
-    "Escola Estadual Kátia Maria Tarifa Leme Tonelli Profª.": "Felipe Teles Parra",
-    "Escola Estadual Lenita Corrêa Camargo Profª.": "Brandon Ken Honda",
-    "Escola Estadual Luiz Alexandre dos Santos Vereador": "José Roberto",
-    "Escola Estadual Lydia Scalet Walker Profª.": "Samuel Silva Santos",
-    "Escola Estadual Maria Zeza Gomes de Oliveira": "Alexandre Vinicius Martins da Silva",
-    "Escola Estadual Mário Toledo de Moraes Dr.": "José Luiz",
-    "Escola Estadual Nair Hannickel Romaro": "Jaqueline Bieging de Oliveira Jacino",
-    "Escola Estadual Nelson Manzanares Dr.": "José Luiz",
-    "Escola Estadual Nide Zaim Cardoso Profª.": "Jaqueline Bieging de Oliveira Jacino",
-    "Escola Estadual Odarico Oliveira Nascimento Profª.": "Jaqueline Bieging de Oliveira Jacino",
-    "Escola Estadual Olindo Dártora Dr.": "José Luiz",
-    "Escola Estadual Otto Weiszflog": "José Luiz",
-    "Escola Estadual Ozilde Albuquerque Passarella Dr.": "Alexandre Vinicius Martins da Silva",
-    "Escola Estadual Parque Cento e Vinte II": "Samuel Silva Santos",
-    "Escola Estadual Paulo Duarte": "José Roberto",
-    "Escola Estadual Pedro Galrão do Nascimento": "Jaqueline Bieging de Oliveira Jacino",
-    "Escola Estadual Pedro Lelis de Souza (Jd. Luciana II)": "José Roberto",
-    "Escola Estadual Pedro Paulo Aguiar - PPA": "Samuel Silva Santos",
-    "Escola Estadual Pietro Petri": "Jaqueline Bieging de Oliveira Jacino",
-    "Escola Estadual Rituco Mitani Profª": "José Roberto",
-    "Escola Estadual Rogério Levorin Prof.": "José Roberto",
-    "Escola Estadual Suzana Dias": "Brandon Ken Honda",
-    "Escola Estadual Ulysses Sanches Ramires Prof.": "Samuel Silva Santos",
-    "Escola Estadual Vincenzo Lobassi": "Samuel Silva Santos",
-    "Escola Estadual Walter Ribas de Andrade Prof.": "Brandon Ken Honda",
-    "Escola Estadual Walther Weiszflog": "José Luiz",
-    "Escola Estadual Zilton Bicudo Prof.": "Felipe Teles Parra"
+    "Escola Estadual Adail Jarbas Duclos": "José Roberto", "Escola Estadual Afonso Moreno": "Felipe Teles Parra", "Escola Estadual Aladino Polon": "José Luiz", "Escola Estadual Alberto Graf Capitão": "Alexandre Vinicius Martins da Silva", "Escola Estadual Albino Fiore": "José Luiz", "Escola Estadual Alfried Theodor Weisflog": "Alexandre Vinicius Martins da Silva", "Escola Estadual Ana Maria Garrido Orlandin Profª": "Brandon Ken Honda", "Escola Estadual Aparecido Roberto Tonellotti Prof.": "Samuel Silva Santos", "Escola Estadual Armando Sestini": "Alexandre Vinicius Martins da Silva", "Escola Estadual Arthur Weingrill": "Alexandre Vinicius Martins da Silva", "Escola Estadual Azevedo Soares": "Felipe Teles Parra", "Escola Estadual Bairro do Itaim": "Alexandre Vinicius Martins da Silva", "Escola Estadual Bairro Jundiaizinho": "Jaqueline Bieging de Oliveira Jacino", "Escola Estadual Belém da Serra": "Felipe Teles Parra", "Escola Estadual Benedito Aparecido Tavares Prof.": "José Roberto", "Escola Estadual Benedito Fagundes Marques (BEFAMA)": "José Roberto", "Escola Estadual Bueno de Azevedo Filho Prof.": "Brandon Ken Honda", "Escola Estadual Carlos Augusto de Pádua Fleury Prof.": "Jaqueline Bieging de Oliveira Jacino", "Escola Estadual Celestina Valente Lengenfelder - Profª": "Brandon Ken Honda", "Escola Estadual Chácara Camponesa/ Jd. Vassouras": "Samuel Silva Santos", "Escola Estadual Domingos Cambiaghi Prof.": "Felipe Teles Parra", "Escola Estadual Élcio José Pereira Cotrim Prof.": "Brandon Ken Honda", "Escola Estadual Elvira Parada Manga Profª": "José Roberto", "Escola Estadual Francisco Gonçalves Vieira Prof.": "José Luiz", "Escola Estadual Hermelina de Albuquerque Passarella": "Jaqueline Bieging de Oliveira Jacino", "Escola Estadual Iraci Sartori Vieira da Silva Profª": "Felipe Teles Parra", "Escola Estadual Isaías Luiz Matiazzo": "Alexandre Vinicius Martins da Silva", "Escola Estadual Isaura de Miranda Botto profª": "José Roberto", "Escola Estadual Isaura Valentini Hanser Profª.": "José Luiz", "Escola Estadual Ivone dos Anjos da Silva - Profª.": "Felipe Teles Parra", "Escola Estadual Jardim Alegria II": "Samuel Silva Santos", "Escola Estadual Jardim das Rosas": "Brandon Ken Honda", "Escola Estadual Jardim São Francisco": "Jaqueline Bieging de Oliveira Jacino", "Escola Estadual Jardim Silvia II": "Samuel Silva Santos", "Escola Estadual Joaquim Marques da Silva Sobrinho Tenente": "Brandon Ken Honda", "Escola Estadual Jocimara Vieira da Silva Profª.": "Felipe Teles Parra", "Escola Estadual José Carlos da Silva JR.": "Alexandre Vinicius Martins da Silva", "Escola Estadual José de Barros Martins Editor": "Samuel Silva Santos", "Escola Estadual José parada Prof. (Parque Vitória IV)": "Felipe Teles Parra", "Escola Estadual José Roberto Melchior Dr.": "Jaqueline Bieging de Oliveira Jacino", "Escola Estadual Kátia Maria Tarifa Leme Tonelli Profª.": "Felipe Teles Parra", "Escola Estadual Lenita Corrêa Camargo Profª.": "Brandon Ken Honda", "Escola Estadual Luiz Alexandre dos Santos Vereador": "José Roberto", "Escola Estadual Lydia Scalet Walker Profª.": "Samuel Silva Santos", "Escola Estadual Maria Zeza Gomes de Oliveira": "Alexandre Vinicius Martins da Silva", "Escola Estadual Mário Toledo de Moraes Dr.": "José Luiz", "Escola Estadual Nair Hannickel Romaro": "Jaqueline Bieging de Oliveira Jacino", "Escola Estadual Nelson Manzanares Dr.": "José Luiz", "Escola Estadual Nide Zaim Cardoso Profª.": "Jaqueline Bieging de Oliveira Jacino", "Escola Estadual Odarico Oliveira Nascimento Profª.": "Jaqueline Bieging de Oliveira Jacino", "Escola Estadual Olindo Dártora Dr.": "José Luiz", "Escola Estadual Otto Weiszflog": "José Luiz", "Escola Estadual Ozilde Albuquerque Passarella Dr.": "Alexandre Vinicius Martins da Silva", "Escola Estadual Parque Cento e Vinte II": "Samuel Silva Santos", "Escola Estadual Paulo Duarte": "José Roberto", "Escola Estadual Pedro Galrão do Nascimento": "Jaqueline Bieging de Oliveira Jacino", "Escola Estadual Pedro Lelis de Souza (Jd. Luciana II)": "José Roberto", "Escola Estadual Pedro Paulo Aguiar - PPA": "Samuel Silva Santos", "Escola Estadual Pietro Petri": "Jaqueline Bieging de Oliveira Jacino", "Escola Estadual Rituco Mitani Profª": "José Roberto", "Escola Estadual Rogério Levorin Prof.": "José Roberto", "Escola Estadual Suzana Dias": "Brandon Ken Honda", "Escola Estadual Ulysses Sanches Ramires Prof.": "Samuel Silva Santos", "Escola Estadual Vincenzo Lobassi": "Samuel Silva Santos", "Escola Estadual Walter Ribas de Andrade Prof.": "Brandon Ken Honda", "Escola Estadual Walther Weiszflog": "José Luiz", "Escola Estadual Zilton Bicudo Prof.": "Felipe Teles Parra"
 };
 
 let db = [], viewDate = new Date(), myChart = null;
@@ -317,19 +261,16 @@ function refresh() {
     const con = db.filter(r => r.status === 'Concluída').length;
     const totalStatus = age + con;
     const perc = totalStatus > 0 ? Math.round((con / totalStatus) * 100) : 0;
-
     document.getElementById('k-tot').innerText = db.length;
     document.getElementById('k-age').innerText = age;
     document.getElementById('k-con').innerText = con;
     document.getElementById('k-pre').innerText = db.filter(r => r.tipo === 'Preventiva').length;
     document.getElementById('k-cor').innerText = db.filter(r => r.tipo === 'Corretiva').length;
-
     if(totalStatus > 0) {
         document.getElementById('p-cont').style.display = 'block';
         document.getElementById('p-bar').style.width = perc + '%';
         document.getElementById('perc-label').innerText = perc + '% CONCLUÍDO';
     }
-
     renderCal(); renderTec(); renderEsc(); renderChart();
 }
 
@@ -364,8 +305,7 @@ function renderCal() {
         const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
         const visits = db.filter(v => v.data === dStr);
         const dayEl = document.createElement('div');
-        dayEl.className = 'day';
-        dayEl.innerHTML = `<b>${d}</b>`;
+        dayEl.className = 'day'; dayEl.innerHTML = `<b>${d}</b>`;
         if(visits.length > 0) dayEl.innerHTML += `<div class="visit-pill">${visits.length} Visitas</div>`;
         dayEl.onclick = () => { document.querySelectorAll('.day').forEach(el => el.classList.remove('selected')); dayEl.classList.add('selected'); showDay(dStr, visits); };
         grid.appendChild(dayEl);
@@ -382,6 +322,17 @@ function renderTec() {
     const b = document.getElementById('iBusca').value.toLowerCase();
     const d = document.getElementById('iDataFiltro').value; 
     
+    // NOVO: Renderizar Escolas Vinculadas ao Técnico
+    const tecArea = document.getElementById('tecSchoolsArea');
+    const tecList = document.getElementById('tecSchoolsList');
+    if(t) {
+        tecArea.style.display = 'block';
+        const vinculadas = Object.keys(MAPA_RESPONSAVEIS).filter(esc => MAPA_RESPONSAVEIS[esc] === t).sort();
+        tecList.innerHTML = vinculadas.length ? vinculadas.map(esc => `<span class="school-tag">🏫 ${esc}</span>`).join('') : '<small>Nenhuma escola vinculada.</small>';
+    } else {
+        tecArea.style.display = 'none';
+    }
+
     const filtered = db.filter(r => (!t || r.tecnico === t) && (r.escola.toLowerCase().includes(b)) && (!d || r.data === d));
     const start = (tPage - 1) * pageSize;
     document.getElementById('tList').innerHTML = filtered.slice(start, start + pageSize).map(itemTemplate).join('');
@@ -391,25 +342,17 @@ function renderTec() {
 function renderEsc() {
     const e = document.getElementById('sEsc').value;
     const d = document.getElementById('iDataEscola').value;
-    
-    // ATUALIZAÇÃO DA LÓGICA DO BANNER DE RESPONSÁVEL
     const banner = document.getElementById('bannerResponsavel');
     const nomeRes = document.getElementById('nomeResponsavelFixo');
-    
     if (e && MAPA_RESPONSAVEIS[e]) {
         banner.style.display = 'block';
         nomeRes.innerText = "👨‍🔧 " + MAPA_RESPONSAVEIS[e];
-    } else {
-        banner.style.display = 'none';
-    }
-    
+    } else { banner.style.display = 'none'; }
     const filtered = db.filter(r => (!e || r.escola === e) && (!d || r.data === d));
     const start = (ePage - 1) * pageSize;
     const paginated = filtered.slice(start, start + pageSize);
-    
     const container = document.getElementById('eHist');
-    container.innerHTML = paginated.length ? paginated.map(itemTemplate).join('') : '<p style="color:var(--text-dim); text-align:center; padding:20px; font-size:0.8rem">Nenhuma visita encontrada para este filtro.</p>';
-    
+    container.innerHTML = paginated.length ? paginated.map(itemTemplate).join('') : '<p style="color:var(--text-dim); text-align:center; padding:20px; font-size:0.8rem">Nenhuma visita encontrada.</p>';
     renderPager('ePager', filtered.length, ePage, (p) => { ePage = p; renderEsc(); });
 }
 
@@ -418,24 +361,18 @@ function renderPager(id, total, current, callback) {
     const container = document.getElementById(id);
     container.innerHTML = '';
     if (totalPages <= 1) return;
-
     const btnPrev = document.createElement('button');
     btnPrev.className = 'pg-btn'; btnPrev.innerText = 'Anterior';
     btnPrev.disabled = current === 1;
     btnPrev.onclick = () => { window.scrollTo(0,0); callback(current - 1); };
-
     const span = document.createElement('span');
     span.style.cssText = "font-size:0.8rem; font-weight:700; margin: 0 10px;";
     span.innerText = `Página ${current} de ${totalPages}`;
-
     const btnNext = document.createElement('button');
     btnNext.className = 'pg-btn'; btnNext.innerText = 'Próximo';
     btnNext.disabled = current === totalPages;
     btnNext.onclick = () => { window.scrollTo(0,0); callback(current + 1); };
-
-    container.appendChild(btnPrev);
-    container.appendChild(span);
-    container.appendChild(btnNext);
+    container.append(btnPrev, span, btnNext);
 }
 
 function renderChart() {
@@ -444,7 +381,6 @@ function renderChart() {
     const tecs = [...new Set(db.map(r => r.tecnico))].filter(t => t).sort();
     const isLight = document.body.classList.contains('light-mode');
     const color = isLight ? '#64748b' : '#94a3b8';
-
     myChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -467,16 +403,12 @@ function renderChart() {
 
 function setupFilters() {
     const tecs = [...new Set(db.map(r => r.tecnico))].filter(t => t).sort();
-    // Usei as chaves do MAPA_RESPONSAVEIS para garantir que todas as 67 apareçam, mesmo sem visitas ainda.
     const escs = Object.keys(MAPA_RESPONSAVEIS).sort();
-    
     document.getElementById('sTec').innerHTML = '<option value="">Todos Técnicos</option>' + tecs.map(t => `<option>${t}</option>`).join('');
     document.getElementById('sEsc').innerHTML = '<option value="">Selecionar Escola...</option>' + escs.map(e => `<option>${e}</option>`).join('');
-    
     document.getElementById('sTec').onchange = () => { tPage = 1; renderTec(); };
     document.getElementById('iBusca').oninput = () => { tPage = 1; renderTec(); };
     document.getElementById('iDataFiltro').onchange = () => { tPage = 1; renderTec(); };
-    
     document.getElementById('sEsc').onchange = () => { ePage = 1; renderEsc(); };
     document.getElementById('iDataEscola').onchange = () => { ePage = 1; renderEsc(); };
 }
