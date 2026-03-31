@@ -1,117 +1,108 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Relatório de Visita Técnica - URE de Caieiras</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório URE Caieiras - v2.1</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<style>
-/* Definição de Variáveis de Cores */
-:root {
-    --bg-body: linear-gradient(135deg,#eef4ff,#f8fbff);
-    --bg-card: #ffffff;
-    --text-main: #24324a;
-    --text-title: #1e3a5f;
-    --border-color: rgba(31,61,115,0.1);
-    --input-bg: #ffffff;
-    --input-text: #24324a;
-}
+    <style>
+        :root {
+            --bg-body: linear-gradient(135deg,#eef4ff,#f8fbff);
+            --bg-card: #ffffff;
+            --text-main: #24324a;
+            --text-title: #1e3a5f;
+            --border-color: rgba(31,61,115,0.1);
+            --input-bg: #ffffff;
+            --input-text: #24324a;
+        }
 
-/* Cores do Modo Escuro */
-body.dark-mode {
-    --bg-body: #121212;
-    --bg-card: #1e1e1e;
-    --text-main: #e0e0e0;
-    --text-title: #bb86fc;
-    --border-color: #333;
-    --input-bg: #2d2d2d;
-    --input-text: #ffffff;
-}
+        body.dark-mode {
+            --bg-body: #121212;
+            --bg-card: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-title: #bb86fc;
+            --border-color: #333;
+            --input-bg: #2d2d2d;
+            --input-text: #ffffff;
+        }
 
-body {
-    background: var(--bg-body);
-    background-attachment: fixed;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    color: var(--text-main);
-    transition: all 0.3s ease;
-}
+        body {
+            background: var(--bg-body);
+            background-attachment: fixed;
+            font-family: "Segoe UI", system-ui, sans-serif;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+        }
 
-.container { max-width: 900px; }
+        .container { max-width: 900px; }
 
-.header { text-align:center; margin-bottom:30px; margin-top: 20px; }
-.header h3 { font-weight:700; color: var(--text-title); }
+        .header { text-align:center; margin: 30px 0; }
+        .header h3 { font-weight:800; color: var(--text-title); text-transform: uppercase; }
 
-.section-card {
-    background: var(--bg-card);
-    border-radius: 18px;
-    padding: 25px;
-    margin-bottom: 20px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
-    border: 1px solid var(--border-color);
-    transition: transform 0.2s ease, background 0.3s ease;
-}
+        .section-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
+        }
 
-.section-card:hover {
-    transform: translateY(-2px);
-}
+        .section-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: block;
+            color: var(--text-title);
+            border-left: 4px solid #0d6efd;
+            padding-left: 10px;
+        }
 
-.section-title {
-    font-weight: 700;
-    margin-bottom: 15px;
-    display: block;
-    color: var(--text-title);
-    font-size: 1.1rem;
-}
+        .form-control, .form-select {
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+        }
 
-/* Customização de Inputs para Modo Escuro */
-.form-control, .form-select {
-    background-color: var(--input-bg);
-    color: var(--input-text);
-    border: 1px solid var(--border-color);
-}
+        .btn {
+            border-radius: 14px;
+            font-weight: 700;
+            padding: 15px 25px;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
 
-.form-control:focus, .form-select:focus {
-    background-color: var(--input-bg);
-    color: var(--input-text);
-    filter: brightness(1.1);
-}
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            cursor: pointer;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
 
-textarea { min-height: 120px; }
-.form-check { margin-bottom: 8px; }
-
-.btn {
-    border-radius: 12px;
-    font-weight: 600;
-    padding: 12px 24px;
-    transition: all 0.3s;
-}
-
-.erro {
-    border: 2px solid #dc3545 !important;
-}
-
-/* Botão de Alternar Tema */
-.theme-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    cursor: pointer;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    padding: 10px;
-    border-radius: 50%;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-</style>
+        @media (max-width: 768px) {
+            .btn { width: 100%; margin-bottom: 10px; }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="theme-toggle" onclick="toggleDarkMode()" title="Alternar Modo Claro/Escuro">
+<div class="theme-toggle" onclick="toggleDarkMode()">
     <span id="theme-icon">🌙</span>
 </div>
 
@@ -119,124 +110,116 @@ textarea { min-height: 120px; }
 
     <div id="relatorio">
         <div class="header">
-            <h3>📋 Relatório de Visita Técnica - URE de Caieiras</h3>
+            <h3>📋 Relatório Técnico <br><small style="font-size: 0.6em; opacity: 0.8;">URE de Caieiras</small></h3>
         </div>
 
         <div class="section-card">
-            <label class="section-title">🏫 Escola</label>
+            <label class="section-title">🏫 Unidade Escolar</label>
             <select class="form-select obrigatorio" id="escola">
-                <option value="">Selecione...</option>
-<option>Escola Estadual Adail Jarbas Duclos</option>
-<option>Escola Estadual Afonso Moreno</option>
-<option>Escola Estadual Aladino Polon</option>
-<option>Escola Estadual Alberto Graf Capitão</option>
-<option>Escola Estadual Albino Fiore</option>
-<option>Escola Estadual Alfried Theodor Weisflog</option>
-<option>Escola Estadual Ana Maria Garrido Orlandin Profª</option>
-<option>Escola Estadual Aparecido Roberto Tonellotti Prof.</option>
-<option>Escola Estadual Armando Sestini</option>
-<option>Escola Estadual Arthur Weingrill</option>
-<option>Escola Estadual Azevedo Soares</option>
-<option>Escola Estadual Bairro do Itaim</option>
-<option>Escola Estadual Bairro Jundiaizinho</option>
-<option>Escola Estadual Belém da Serra</option>
-<option>Escola Estadual Benedito Aparecido Tavares Prof.</option>
-<option>Escola Estadual Benedito Fagundes Marques (BEFAMA)</option>
-<option>Escola Estadual Bueno de Azevedo Filho Prof.</option>
-<option>Escola Estadual Carlos Augusto de Pádua Fleury Prof.</option>
-<option>Escola Estadual Celestina Valente Lengenfelder - Profª</option>
-<option>Escola Estadual Chácara Camponesa/ Jd. Vassouras</option>
-<option>Escola Estadual Domingos Cambiaghi Prof.</option>
-<option>Escola Estadual Élcio José Pereira Cotrim Prof.</option>
-<option>Escola Estadual Elvira Parada Manga Profª</option>
-<option>Escola Estadual Francisco Gonçalves Vieira Prof.</option>
-<option>Escola Estadual Hermelina de Albuquerque Passarella</option>
-<option>Escola Estadual Iraci Sartori Vieira da Silva Profª</option>
-<option>Escola Estadual Isaías Luiz Matiazzo</option>
-<option>Escola Estadual Isaura de Miranda Botto profª</option>
-<option>Escola Estadual Isaura Valentini Hanser Profª.</option>
-<option>Escola Estadual Ivone dos Anjos da Silva - Profª.</option>
-<option>Escola Estadual Jardim Alegria II</option>
-<option>Escola Estadual Jardim das Rosas</option>
-<option>Escola Estadual Jardim São Francisco</option>
-<option>Escola Estadual Jardim Silvia II</option>
-<option>Escola Estadual Joaquim Marques da Silva Sobrinho Tenente</option>
-<option>Escola Estadual Jocimara Vieira da Silva Profª.</option>
-<option>Escola Estadual José Carlos da Silva JR.</option>
-<option>Escola Estadual José de Barros Martins Editor</option>
-<option>Escola Estadual José parada Prof. (Parque Vitória IV)</option>
-<option>Escola Estadual José Roberto Melchior Dr.</option>
-<option>Escola Estadual Kátia Maria Tarifa Leme Tonelli Profª.</option>
-<option>Escola Estadual Lenita Corrêa Camargo Profª.</option>
-<option>Escola Estadual Luiz Alexandre dos Santos Vereador</option>
-<option>Escola Estadual Lydia Scalet Walker Profª.</option>
-<option>Escola Estadual Maria Zeza Gomes de Oliveira</option>
-<option>Escola Estadual Mário Toledo de Moraes Dr.</option>
-<option>Escola Estadual Nair Hannickel Romaro</option>
-<option>Escola Estadual Nelson Manzanares Dr.</option>
-<option>Escola Estadual Nide Zaim Cardoso Profª.</option>
-<option>Escola Estadual Odarico Oliveira Nascimento Profª.</option>
-<option>Escola Estadual Olindo Dártora Dr.</option>
-<option>Escola Estadual Otto Weiszflog</option>
-<option>Escola Estadual Ozilde Albuquerque Passarella Dr.</option>
-<option>Escola Estadual Parque Cento e Vinte II</option>
-<option>Escola Estadual Paulo Duarte</option>
-<option>Escola Estadual Pedro Galrão do Nascimento</option>
-<option>Escola Estadual Pedro Lelis de Souza (Jd. Luciana II)</option>
-<option>Escola Estadual Pedro Paulo Aguiar - PPA</option>
-<option>Escola Estadual Pietro Petri</option>
-<option>Escola Estadual Rituco Mitani Profª</option>
-<option>Escola Estadual Rogério Levorin Prof.</option>
-<option>Escola Estadual Suzana Dias</option>
-<option>Escola Estadual Ulysses Sanches Ramires Prof.</option>
-<option>Escola Estadual Vincenzo Lobassi</option>
-<option>Escola Estadual Walter Ribas de Andrade Prof.</option>
-<option>Escola Estadual Walther Weiszflog</option>
-<option>Escola Estadual Zilton Bicudo Prof.</option>
-                </select>
+                <option value="">Selecione a escola...</option>
+                <option>Escola Estadual Adail Jarbas Duclos</option>
+                <option>Escola Estadual Afonso Moreno</option>
+                <option>Escola Estadual Aladino Polon</option>
+                <option>Escola Estadual Alberto Graf Capitão</option>
+                <option>Escola Estadual Albino Fiore</option>
+                <option>Escola Estadual Alfried Theodor Weisflog</option>
+                <option>Escola Estadual Ana Maria Garrido Orlandin Profª</option>
+                <option>Escola Estadual Aparecido Roberto Tonellotti Prof.</option>
+                <option>Escola Estadual Armando Sestini</option>
+                <option>Escola Estadual Arthur Weingrill</option>
+                <option>Escola Estadual Azevedo Soares</option>
+                <option>Escola Estadual Bairro do Itaim</option>
+                <option>Escola Estadual Bairro Jundiaizinho</option>
+                <option>Escola Estadual Belém da Serra</option>
+                <option>Escola Estadual Benedito Aparecido Tavares Prof.</option>
+                <option>Escola Estadual Benedito Fagundes Marques (BEFAMA)</option>
+                <option>Escola Estadual Bueno de Azevedo Filho Prof.</option>
+                <option>Escola Estadual Carlos Augusto de Pádua Fleury Prof.</option>
+                <option>Escola Estadual Celestina Valente Lengenfelder - Profª</option>
+                <option>Escola Estadual Chácara Camponesa/ Jd. Vassouras</option>
+                <option>Escola Estadual Domingos Cambiaghi Prof.</option>
+                <option>Escola Estadual Élcio José Pereira Cotrim Prof.</option>
+                <option>Escola Estadual Elvira Parada Manga Profª</option>
+                <option>Escola Estadual Francisco Gonçalves Vieira Prof.</option>
+                <option>Escola Estadual Hermelina de Albuquerque Passarella</option>
+                <option>Escola Estadual Iraci Sartori Vieira da Silva Profª</option>
+                <option>Escola Estadual Isaías Luiz Matiazzo</option>
+                <option>Escola Estadual Isaura de Miranda Botto profª</option>
+                <option>Escola Estadual Isaura Valentini Hanser Profª.</option>
+                <option>Escola Estadual Ivone dos Anjos da Silva - Profª.</option>
+                <option>Escola Estadual Jardim Alegria II</option>
+                <option>Escola Estadual Jardim das Rosas</option>
+                <option>Escola Estadual Jardim São Francisco</option>
+                <option>Escola Estadual Jardim Silvia II</option>
+                <option>Escola Estadual Joaquim Marques da Silva Sobrinho Tenente</option>
+                <option>Escola Estadual Jocimara Vieira da Silva Profª.</option>
+                <option>Escola Estadual José Carlos da Silva JR.</option>
+                <option>Escola Estadual José de Barros Martins Editor</option>
+                <option>Escola Estadual José parada Prof. (Parque Vitória IV)</option>
+                <option>Escola Estadual José Roberto Melchior Dr.</option>
+                <option>Escola Estadual Kátia Maria Tarifa Leme Tonelli Profª.</option>
+                <option>Escola Estadual Lenita Corrêa Camargo Profª.</option>
+                <option>Escola Estadual Luiz Alexandre dos Santos Vereador</option>
+                <option>Escola Estadual Lydia Scalet Walker Profª.</option>
+                <option>Escola Estadual Maria Zeza Gomes de Oliveira</option>
+                <option>Escola Estadual Mário Toledo de Moraes Dr.</option>
+                <option>Escola Estadual Nair Hannickel Romaro</option>
+                <option>Escola Estadual Nelson Manzanares Dr.</option>
+                <option>Escola Estadual Nide Zaim Cardoso Profª.</option>
+                <option>Escola Estadual Odarico Oliveira Nascimento Profª.</option>
+                <option>Escola Estadual Olindo Dártora Dr.</option>
+                <option>Escola Estadual Otto Weiszflog</option>
+                <option>Escola Estadual Ozilde Albuquerque Passarella Dr.</option>
+                <option>Escola Estadual Parque Cento e Vinte II</option>
+                <option>Escola Estadual Paulo Duarte</option>
+                <option>Escola Estadual Pedro Galrão do Nascimento</option>
+                <option>Escola Estadual Pedro Lelis de Souza (Jd. Luciana II)</option>
+                <option>Escola Estadual Pedro Paulo Aguiar - PPA</option>
+                <option>Escola Estadual Pietro Petri</option>
+                <option>Escola Estadual Rituco Mitani Profª</option>
+                <option>Escola Estadual Rogério Levorin Prof.</option>
+                <option>Escola Estadual Suzana Dias</option>
+                <option>Escola Estadual Ulysses Sanches Ramires Prof.</option>
+                <option>Escola Estadual Vincenzo Lobassi</option>
+                <option>Escola Estadual Walter Ribas de Andrade Prof.</option>
+                <option>Escola Estadual Walther Weiszflog</option>
+                <option>Escola Estadual Zilton Bicudo Prof.</option>
+            </select>
         </div>
 
         <div class="section-card">
-            <label class="section-title">🏢 Dependências</label>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Direção</div>
-                    <div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Secretaria</div>
-                    <div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Coordenação</div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Sala dos Professores</div>
-                    <div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Sala de Informática</div>
-                    <div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Sala de Leitura</div>
-                </div>
+            <label class="section-title">🏢 Dependências Verificadas</label>
+            <div class="row g-2">
+                <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Direção</div></div>
+                <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Secretaria</div></div>
+                <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Coordenação</div></div>
+                <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Sala Professores</div></div>
+                <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Informática</div></div>
+                <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Sala Leitura</div></div>
             </div>
-            <input type="text" id="outro" class="form-control mt-3" placeholder="Outro (descrever)">
+            <input type="text" id="outro" class="form-control mt-3" placeholder="Outra dependência...">
         </div>
 
         <div class="section-card">
-            <label class="section-title">🛠️ Itens Verificados</label>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-check"><input class="form-check-input item" type="checkbox"> Access Points</div>
-                    <div class="form-check"><input class="form-check-input item" type="checkbox"> Notebooks</div>
-                    <div class="form-check"><input class="form-check-input item" type="checkbox"> Tablets</div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-check"><input class="form-check-input item" type="checkbox"> Câmeras</div>
-                    <div class="form-check"><input class="form-check-input item" type="checkbox"> Banda de internet</div>
-                    <div class="form-check"><input class="form-check-input item" type="checkbox"> Racks e Switches</div>
-                </div>
+            <label class="section-title">🛠️ Itens Avaliados</label>
+            <div class="row g-2">
+                <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Access Points</div></div>
+                <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Notebooks</div></div>
+                <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Tablets</div></div>
+                <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Câmeras</div></div>
+                <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Internet</div></div>
+                <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Racks/Switches</div></div>
             </div>
         </div>
 
         <div class="section-card">
-            <label class="section-title">⚠️ Defeitos</label>
-            <textarea class="form-control obrigatorio" placeholder="Descreva os problemas encontrados..."></textarea>
+            <label class="section-title">⚠️ Defeitos Encontrados</label>
+            <textarea class="form-control obrigatorio" placeholder="Descreva os problemas..."></textarea>
         </div>
 
         <div class="section-card">
-            <label class="section-title">📝 Soluções</label>
-            <textarea class="form-control obrigatorio" placeholder="Descreva as ações tomadas ou orientações dadas..."></textarea>
+            <label class="section-title">📝 Soluções Aplicadas</label>
+            <textarea class="form-control obrigatorio" placeholder="Descreva o que foi feito..."></textarea>
         </div>
 
         <div class="section-card">
@@ -247,7 +230,7 @@ textarea { min-height: 120px; }
         <div class="section-card">
             <label class="section-title">👨‍🔧 Técnico Responsável</label>
             <select class="form-select obrigatorio" id="tecnico">
-                <option value="">Selecione...</option>
+                <option value="">Selecione seu nome...</option>
                 <option>Felipe Teles Parra</option>
                 <option>Samuel Silva Santos</option>
                 <option>Jaqueline Bieging de Oliveira Jacino</option>
@@ -259,210 +242,130 @@ textarea { min-height: 120px; }
         </div>
     </div>
 
-    <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4 mb-5">
-        <button class="btn btn-primary shadow" onclick="gerarPDF()">📄 Gerar Relatório PDF</button>
-        <button class="btn btn-success shadow" onclick="abrirDrive()">📂 Acessar Drive do Mês</button>
+    <div class="text-center mt-4 mb-5">
+        <button class="btn btn-primary shadow-sm" onclick="gerarPDF()">📄 Gerar PDF & Copiar Nome</button>
+        <button class="btn btn-success shadow-sm" onclick="abrirDrive()">📂 Abrir Drive do Mês</button>
     </div>
 
 </div>
 
 <script>
-// Lógica do Modo Escuro
+// TEMA
 function toggleDarkMode() {
     const body = document.body;
-    const icon = document.getElementById("theme-icon");
-    
     body.classList.toggle("dark-mode");
-    
-    if (body.classList.contains("dark-mode")) {
-        icon.innerText = "☀️";
-        localStorage.setItem("theme", "dark");
-    } else {
-        icon.innerText = "🌙";
-        localStorage.setItem("theme", "light");
-    }
+    const isDark = body.classList.contains("dark-mode");
+    document.getElementById("theme-icon").innerText = isDark ? "☀️" : "🌙";
+    localStorage.setItem("theme", isDark ? "dark" : "light");
 }
-
-// Persistência do tema ao recarregar
 if (localStorage.getItem("theme") === "dark") {
     document.body.classList.add("dark-mode");
     document.getElementById("theme-icon").innerText = "☀️";
 }
 
-// MANTENDO TODA A SUA LÓGICA ORIGINAL ABAIXO
-async function gerarPDF(){
-    let valido = true;
-    document.querySelectorAll(".erro").forEach(el => el.classList.remove("erro"));
-
-    document.querySelectorAll(".obrigatorio").forEach(el => {
-        if(!el.value || el.value === "Selecione..."){
-            el.classList.add("erro");
-            valido = false;
-        }
-    });
-
-    const algumCheck = document.querySelectorAll(".dependencia:checked, .item:checked").length;
-    if(algumCheck === 0){
-        alert("Selecione ao menos um item ou dependência.");
-        return;
-    }
-
-    if(!valido){
-        alert("Preencha todos os campos obrigatórios.");
-        return;
-    }
-
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF();
-    const escola = document.getElementById("escola").value;
-    const tecnico = document.getElementById("tecnico").value;
-    const outro = document.getElementById("outro").value;
-    const textareas = document.querySelectorAll("textarea");
-    const defeitos = textareas[0].value;
-    const solucoes = textareas[1].value;
-
-    const dependencias = [...document.querySelectorAll(".dependencia:checked")]
-        .map(c => c.parentElement.innerText.trim());
-    if(outro) dependencias.push("Outro: " + outro);
-
-    const itens = [...document.querySelectorAll(".item:checked")]
-        .map(c => c.parentElement.innerText.trim());
-
-    let y = 15;
-    function checkPage(neededHeight = 0){ 
-        if(y + neededHeight > 275){ 
-            pdf.addPage(); 
-            y = 20; 
-            return true;
-        }
-        return false;
-    }
-
-    function tituloCentro(txt){
-        pdf.setFont("helvetica","bold");
-        pdf.setFontSize(12);
-        pdf.text(txt,105,y,{align:"center"});
-        y+=6;
-    }
-
-    function caixa(titulo, texto){
-        const padding = 3;
-        const lineHeight = 5;
-        const larguraUtil = 180;
-        
-        pdf.setFont("helvetica","bold");
-        pdf.setFontSize(10);
-        
-        const linhas = pdf.splitTextToSize(texto || "-", larguraUtil);
-        const alturaBox = (linhas.length * lineHeight) + (padding * 2);
-        
-        // Verifica se a caixa inteira cabe, se não, pula página
-        checkPage(alturaBox + 10);
-
-        pdf.text(titulo, 12, y);
-        y += 4;
-        
-        pdf.setFont("helvetica","normal");
-        pdf.setDrawColor(180);
-        pdf.rect(10, y - 1, 190, alturaBox);
-        
-        linhas.forEach((linha, i) => {
-            pdf.text(linha, 12, y + padding + (i * lineHeight));
-        });
-
-        y += alturaBox + 8;
-    }
-
-    // --- Início do Conteúdo ---
-    tituloCentro("GOVERNO DO ESTADO DE SÃO PAULO");
-    tituloCentro("Secretaria da Educação");
-    tituloCentro("RELATÓRIO DE VISITA TÉCNICA - URE de CAIEIRAS");
-    pdf.setDrawColor(0);
-    pdf.line(10, y, 200, y);
-    y += 10;
-
-    caixa("Escola:", escola);
-    caixa("Técnico:", tecnico);
-    caixa("Dependências Verificadas:", dependencias.join(", "));
-    caixa("Itens Verificados:", itens.join(", "));
-    caixa("Defeitos Encontrados:", defeitos);
-    caixa("Soluções / Orientações:", solucoes);
-
-    // --- Fotos ---
-    const files = document.getElementById("fotos").files;
-    if(files.length > 0){
-        pdf.addPage();
-        y = 20;
-        tituloCentro("REGISTRO FOTOGRÁFICO");
-        y += 10;
-
-        for(let i = 0; i < files.length; i++){
-            const base64 = await toBase64(files[i]);
-            const dim = await getImageDimensions(base64);
-            
-            // Calcula largura e altura proporcional (Max 170mm de largura)
-            const maxWidth = 170;
-            const imgWidth = maxWidth;
-            const imgHeight = (dim.h * maxWidth) / dim.w;
-
-            // Se a imagem for muito alta e não couber na página, reduz ela
-            let finalHeight = imgHeight;
-            let finalWidth = imgWidth;
-            if (finalHeight > 220) {
-                finalHeight = 220;
-                finalWidth = (dim.w * 220) / dim.h;
-            }
-
-            // Verifica se tem espaço na página atual, senão pula
-            checkPage(finalHeight + 10);
-
-            // Centraliza a imagem horizontalmente
-            const xCentrado = (210 - finalWidth) / 2;
-            
-            pdf.setDrawColor(200);
-            pdf.rect(xCentrado - 1, y - 1, finalWidth + 2, finalHeight + 2); // Moldura
-            pdf.addImage(base64, "JPEG", xCentrado, y, finalWidth, finalHeight);
-            
-            y += finalHeight + 15;
-        }
-    }
-
-    // Rodapé com data e página
-    const pageCount = pdf.internal.getNumberOfPages();
-    for(let i = 1; i <= pageCount; i++) {
-        pdf.setPage(i);
-        pdf.setFontSize(8);
-        pdf.setTextColor(100);
-        pdf.text("Data: " + new Date().toLocaleDateString("pt-BR"), 10, 290);
-        pdf.text("Página " + i + " de " + pageCount, 180, 290);
-    }
-
-    pdf.save(`Relatorio_${escola.replace(/ /g,"_")}.pdf`);
+// UTILITARIOS
+function copiarTexto(texto) {
+    navigator.clipboard.writeText(texto);
 }
 
-// Função auxiliar para pegar o tamanho real da imagem
+function toBase64(file){
+    return new Promise((resolve)=>{
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+    });
+}
+
 function getImageDimensions(file) {
-  return new Promise (function (resolved, rejected) {
+  return new Promise ((resolved) => {
     var i = new Image();
-    i.onload = function(){
-      resolved({w: i.width, h: i.height});
-    };
+    i.onload = function(){ resolved({w: i.width, h: i.height}); };
     i.src = file;
   });
 }
 
-function toBase64(file){
-    return new Promise((resolve, reject)=>{
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
+// PDF
+async function gerarPDF(){
+    let valido = true;
+    document.querySelectorAll(".erro").forEach(el => el.classList.remove("erro"));
+    document.querySelectorAll(".obrigatorio").forEach(el => {
+        if(!el.value || el.value.includes("Selecione")){ el.classList.add("erro"); valido = false; }
     });
+
+    if(!valido){ alert("Preencha os campos obrigatórios."); return; }
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+    
+    // --- GERADOR DE NOME DO ARQUIVO ---
+    const escola = document.getElementById("escola").value;
+    const tecnico = document.getElementById("tecnico").value;
+    const d = new Date();
+    const dia = String(d.getDate()).padStart(2, '0');
+    const mes = String(d.getMonth() + 1).padStart(2, '0');
+    const ano = d.getFullYear();
+    const tecnicoNome = tecnico.split(' ')[0];
+    const escolaLimpa = escola.replace("Escola Estadual ", "").substring(0, 15).trim();
+    
+    // PADRÃO: RVT_Escola_DD-MM-AAAA_Tecnico.pdf
+    const nomeArquivo = `RVT_${escolaLimpa}_${dia}-${mes}-${ano}_${tecnicoNome}.pdf`.replace(/\s+/g, '_');
+
+    const outro = document.getElementById("outro").value;
+    const textareas = document.querySelectorAll("textarea");
+    const dependencias = [...document.querySelectorAll(".dependencia:checked")].map(c => c.parentElement.innerText.trim());
+    if(outro) dependencias.push("Outro: " + outro);
+    const itens = [...document.querySelectorAll(".item:checked")].map(c => c.parentElement.innerText.trim());
+
+    let y = 15;
+    function checkPage(h = 0){ if(y + h > 275){ pdf.addPage(); y = 20; return true; } return false; }
+    function tituloCentro(txt){ pdf.setFont("helvetica","bold"); pdf.setFontSize(12); pdf.text(txt,105,y,{align:"center"}); y+=6; }
+    function caixa(tit, txt){
+        const linhas = pdf.splitTextToSize(txt || "-", 180);
+        const hBox = (linhas.length * 5) + 6;
+        checkPage(hBox + 10);
+        pdf.setFont("helvetica","bold"); pdf.setFontSize(10); pdf.text(tit, 12, y); y += 4;
+        pdf.setFont("helvetica","normal"); pdf.setDrawColor(180); pdf.rect(10, y-1, 190, hBox);
+        linhas.forEach((l, i) => pdf.text(l, 12, y + 3 + (i * 5)));
+        y += hBox + 7;
+    }
+
+    tituloCentro("GOVERNO DO ESTADO DE SÃO PAULO");
+    tituloCentro("Secretaria da Educação");
+    tituloCentro("RELATÓRIO DE VISITA TÉCNICA - URE de CAIEIRAS");
+    pdf.line(10, y, 200, y); y += 10;
+
+    caixa("Escola:", escola);
+    caixa("Técnico:", tecnico);
+    caixa("Dependências:", dependencias.join(", "));
+    caixa("Itens:", itens.join(", "));
+    caixa("Defeitos:", textareas[0].value);
+    caixa("Soluções:", textareas[1].value);
+
+    const files = document.getElementById("fotos").files;
+    if(files.length > 0){
+        pdf.addPage(); y = 20; tituloCentro("REGISTRO FOTOGRÁFICO"); y += 10;
+        for(let i = 0; i < files.length; i++){
+            const b64 = await toBase64(files[i]);
+            const dim = await getImageDimensions(b64);
+            let fW = 170; let fH = (dim.h * 170) / dim.w;
+            if (fH > 200) { fH = 200; fW = (dim.w * 200) / dim.h; }
+            checkPage(fH + 10);
+            pdf.setDrawColor(220); pdf.rect((210-fW)/2 - 0.5, y - 0.5, fW + 1, fH + 1);
+            pdf.addImage(b64, "JPEG", (210-fW)/2, y, fW, fH);
+            y += fH + 12;
+        }
+    }
+
+    pdf.save(nomeArquivo);
+    copiarTexto(nomeArquivo);
+
+    setTimeout(() => {
+        if(confirm(`✅ Gerado: ${nomeArquivo}\n\nNome copiado! Abrir o Drive?`)) abrirDrive();
+    }, 600);
 }
 
 function abrirDrive(){
-    const hoje = new Date();
-    const mes = String(hoje.getMonth() + 1).padStart(2,'0');
+    const mes = String(new Date().getMonth() + 1).padStart(2,'0');
     const pastas = {
         "01": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgB1H1R67z9bQpm9GvUrFi2rAQdlYzPToUC5U_YZHeBTa_c?e=cWOTXS",
         "02": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgDz5zErJublQbMtbX1uOo62ARuv-cUEewJ_R2gEsQWPcCU?e=A65i1J",
@@ -477,12 +380,8 @@ function abrirDrive(){
         "11": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgBWo_vtDOYZQI746n-Rng4RAcTusj5tJlP8qd1xrxWenlI?e=vjgtav",
         "12": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgCLc7V6FILISYz-_XVy2oA0AROGLIEN-k7-Bh7voirMYNA?e=7BNiEe"
     };
-
-    if(pastas[mes]){
-        window.open(pastas[mes], "_blank");
-    }else{
-        alert("Pasta do mês não configurada.");
-    }
+    if(pastas[mes]) window.open(pastas[mes], "_blank");
+    else alert("Pasta não encontrada.");
 }
 </script>
 
