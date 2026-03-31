@@ -336,6 +336,7 @@ async function gerarPDF(){
 
     caixa("Escola:", escola);
     caixa("Técnico:", tecnico);
+    caixa("Data da Visita:", `${dia}/${mes}/${ano}`);
     caixa("Dependências:", dependencias.join(", "));
     caixa("Itens:", itens.join(", "));
     caixa("Defeitos:", textareas[0].value);
