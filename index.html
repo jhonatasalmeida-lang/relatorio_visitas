@@ -341,6 +341,7 @@
         <div class="text-center mt-4 mb-5">
             <button class="btn btn-primary shadow-sm" onclick="gerarPDF()">📄 Gerar PDF & Copiar Nome</button>
             <button class="btn btn-success shadow-sm" onclick="abrirDrive()">📂 Abrir Drive Mês Atual</button>
+            <button class="btn btn-danger shadow-sm" onclick="limparFormulario()">🧹 Limpar Campos</button>
         </div>
     </div>
 </div>
@@ -482,6 +483,28 @@ function abrirDrive(){
     const mes = String(new Date().getMonth() + 1).padStart(2,'0');
     abrirMes(mes);
 }
+
+function limparFormulario() {
+    if (confirm("Deseja realmente limpar todos os campos do relatório?")) {
+        // Limpa Selects (volta para a primeira opção)
+        document.querySelectorAll("select").forEach(sel => sel.selectedIndex = 0);
+        
+        // Limpa Inputs de texto e de arquivo
+        document.querySelectorAll("input[type='text'], input[type='file']").forEach(input => input.value = "");
+        
+        // Limpa Textareas
+        document.querySelectorAll("textarea").forEach(tx => tx.value = "");
+        
+        // Desmarca Checkboxes
+        document.querySelectorAll("input[type='checkbox']").forEach(ck => ck.checked = false);
+        
+        // Remove classes de erro (bordas vermelhas) caso existam
+        document.querySelectorAll(".erro").forEach(el => el.classList.remove("erro"));
+
+        alert("Campos limpos com sucesso!");
+    }
+}    
+    
 </script>
 
 </body>
