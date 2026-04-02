@@ -17,6 +17,7 @@
             --border-color: rgba(31,61,115,0.1);
             --input-bg: #ffffff;
             --input-text: #24324a;
+            --sidebar-bg: #ffffff;
         }
 
         body.dark-mode {
@@ -27,6 +28,7 @@
             --border-color: #333;
             --input-bg: #2d2d2d;
             --input-text: #ffffff;
+            --sidebar-bg: #1e1e1e;
         }
 
         body {
@@ -35,9 +37,70 @@
             font-family: "Segoe UI", system-ui, sans-serif;
             color: var(--text-main);
             transition: all 0.3s ease;
+            margin: 0;
+            display: flex; /* Habilita layout lado a lado */
+            min-height: 100vh;
         }
 
-        .container { max-width: 900px; }
+        /* Estrutura do Painel Lateral */
+        .sidebar {
+            width: 250px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.03);
+            z-index: 900;
+        }
+
+        .sidebar-title {
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: var(--text-title);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 5px;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-nav li { margin-bottom: 8px; }
+
+        .sidebar-nav a {
+            text-decoration: none;
+            color: var(--text-main);
+            padding: 10px 15px;
+            border-radius: 10px;
+            display: block;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(13, 110, 253, 0.1);
+            color: #0d6efd;
+            border-color: rgba(13, 110, 253, 0.2);
+        }
+
+        /* Área de conteúdo principal */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .container { max-width: 900px; margin: auto; }
 
         .header { text-align:center; margin: 30px 0; }
         .header h3 { font-weight:800; color: var(--text-title); text-transform: uppercase; }
@@ -95,6 +158,21 @@
         }
 
         @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { 
+                width: 100%; 
+                height: auto; 
+                position: relative; 
+                border-right: none; 
+                border-bottom: 1px solid var(--border-color);
+            }
+            .sidebar-nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            .sidebar-nav li { flex: 1 0 30%; }
+            .sidebar-nav a { font-size: 0.75rem; text-align: center; padding: 5px; }
             .btn { width: 100%; margin-bottom: 10px; }
         }
     </style>
@@ -102,151 +180,169 @@
 
 <body>
 
-<div class="theme-toggle" onclick="toggleDarkMode()">
-    <span id="theme-icon">🌙</span>
-</div>
+<nav class="sidebar">
+    <div class="sidebar-title">📁 Pastas do Drive</div>
+    <ul class="sidebar-nav">
+        <li><a href="#" onclick="abrirMes('01')">Janeiro</a></li>
+        <li><a href="#" onclick="abrirMes('02')">Fevereiro</a></li>
+        <li><a href="#" onclick="abrirMes('03')">Março</a></li>
+        <li><a href="#" onclick="abrirMes('04')">Abril</a></li>
+        <li><a href="#" onclick="abrirMes('05')">Maio</a></li>
+        <li><a href="#" onclick="abrirMes('06')">Junho</a></li>
+        <li><a href="#" onclick="abrirMes('07')">Julho</a></li>
+        <li><a href="#" onclick="abrirMes('08')">Agosto</a></li>
+        <li><a href="#" onclick="abrirMes('09')">Setembro</a></li>
+        <li><a href="#" onclick="abrirMes('10')">Outubro</a></li>
+        <li><a href="#" onclick="abrirMes('11')">Novembro</a></li>
+        <li><a href="#" onclick="abrirMes('12')">Dezembro</a></li>
+    </ul>
+</nav>
 
-<div class="container py-4">
-
-    <div id="relatorio">
-        <div class="header">
-            <h3>📋 Relatório de Visita Técnica <br><small style="font-size: 0.6em; opacity: 0.8;">Unidade Regional de Ensino de Caieiras</small></h3>
-        </div>
-
-        <div class="section-card">
-            <label class="section-title">🏫 Unidade Escolar</label>
-            <select class="form-select obrigatorio" id="escola">
-                <option value="">Selecione a escola...</option>
-                <option>Escola Estadual Adail Jarbas Duclos</option>
-                <option>Escola Estadual Afonso Moreno</option>
-                <option>Escola Estadual Aladino Polon</option>
-                <option>Escola Estadual Alberto Graf Capitão</option>
-                <option>Escola Estadual Albino Fiore</option>
-                <option>Escola Estadual Alfried Theodor Weisflog</option>
-                <option>Escola Estadual Ana Maria Garrido Orlandin Profª</option>
-                <option>Escola Estadual Aparecido Roberto Tonellotti Prof.</option>
-                <option>Escola Estadual Armando Sestini</option>
-                <option>Escola Estadual Arthur Weingrill</option>
-                <option>Escola Estadual Azevedo Soares</option>
-                <option>Escola Estadual Bairro do Itaim</option>
-                <option>Escola Estadual Bairro Jundiaizinho</option>
-                <option>Escola Estadual Belém da Serra</option>
-                <option>Escola Estadual Benedito Aparecido Tavares Prof.</option>
-                <option>Escola Estadual Benedito Fagundes Marques (BEFAMA)</option>
-                <option>Escola Estadual Bueno de Azevedo Filho Prof.</option>
-                <option>Escola Estadual Carlos Augusto de Pádua Fleury Prof.</option>
-                <option>Escola Estadual Celestina Valente Lengenfelder - Profª</option>
-                <option>Escola Estadual Chácara Camponesa/ Jd. Vassouras</option>
-                <option>Escola Estadual Domingos Cambiaghi Prof.</option>
-                <option>Escola Estadual Élcio José Pereira Cotrim Prof.</option>
-                <option>Escola Estadual Elvira Parada Manga Profª</option>
-                <option>Escola Estadual Francisco Gonçalves Vieira Prof.</option>
-                <option>Escola Estadual Hermelina de Albuquerque Passarella</option>
-                <option>Escola Estadual Iraci Sartori Vieira da Silva Profª</option>
-                <option>Escola Estadual Isaías Luiz Matiazzo</option>
-                <option>Escola Estadual Isaura de Miranda Botto profª</option>
-                <option>Escola Estadual Isaura Valentini Hanser Profª.</option>
-                <option>Escola Estadual Ivone dos Anjos da Silva - Profª.</option>
-                <option>Escola Estadual Jardim Alegria II</option>
-                <option>Escola Estadual Jardim das Rosas</option>
-                <option>Escola Estadual Jardim São Francisco</option>
-                <option>Escola Estadual Jardim Silvia II</option>
-                <option>Escola Estadual Joaquim Marques da Silva Sobrinho Tenente</option>
-                <option>Escola Estadual Jocimara Vieira da Silva Profª.</option>
-                <option>Escola Estadual José Carlos da Silva JR.</option>
-                <option>Escola Estadual José de Barros Martins Editor</option>
-                <option>Escola Estadual José parada Prof. (Parque Vitória IV)</option>
-                <option>Escola Estadual José Roberto Melchior Dr.</option>
-                <option>Escola Estadual Kátia Maria Tarifa Leme Tonelli Profª.</option>
-                <option>Escola Estadual Lenita Corrêa Camargo Profª.</option>
-                <option>Escola Estadual Luiz Alexandre dos Santos Vereador</option>
-                <option>Escola Estadual Lydia Scalet Walker Profª.</option>
-                <option>Escola Estadual Maria Zeza Gomes de Oliveira</option>
-                <option>Escola Estadual Mário Toledo de Moraes Dr.</option>
-                <option>Escola Estadual Nair Hannickel Romaro</option>
-                <option>Escola Estadual Nelson Manzanares Dr.</option>
-                <option>Escola Estadual Nide Zaim Cardoso Profª.</option>
-                <option>Escola Estadual Odarico Oliveira Nascimento Profª.</option>
-                <option>Escola Estadual Olindo Dártora Dr.</option>
-                <option>Escola Estadual Otto Weiszflog</option>
-                <option>Escola Estadual Ozilde Albuquerque Passarella Dr.</option>
-                <option>Escola Estadual Parque Cento e Vinte II</option>
-                <option>Escola Estadual Paulo Duarte</option>
-                <option>Escola Estadual Pedro Galrão do Nascimento</option>
-                <option>Escola Estadual Pedro Lelis de Souza (Jd. Luciana II)</option>
-                <option>Escola Estadual Pedro Paulo Aguiar - PPA</option>
-                <option>Escola Estadual Pietro Petri</option>
-                <option>Escola Estadual Rituco Mitani Profª</option>
-                <option>Escola Estadual Rogério Levorin Prof.</option>
-                <option>Escola Estadual Suzana Dias</option>
-                <option>Escola Estadual Ulysses Sanches Ramires Prof.</option>
-                <option>Escola Estadual Vincenzo Lobassi</option>
-                <option>Escola Estadual Walter Ribas de Andrade Prof.</option>
-                <option>Escola Estadual Walther Weiszflog</option>
-                <option>Escola Estadual Zilton Bicudo Prof.</option>
-            </select>
-        </div>
-
-        <div class="section-card">
-            <label class="section-title">🏢 Dependências Verificadas</label>
-            <div class="row g-2">
-                <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Direção</div></div>
-                <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Secretaria</div></div>
-                <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Coordenação</div></div>
-                <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Sala Professores</div></div>
-                <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Informática</div></div>
-                <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Sala Leitura</div></div>
-            </div>
-            <input type="text" id="outro" class="form-control mt-3" placeholder="Outra dependência...">
-        </div>
-
-        <div class="section-card">
-            <label class="section-title">🛠️ Itens Avaliados</label>
-            <div class="row g-2">
-                <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Access Points</div></div>
-                <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Notebooks</div></div>
-                <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Tablets</div></div>
-                <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Câmeras</div></div>
-                <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Internet</div></div>
-                <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Racks/Switches</div></div>
-            </div>
-        </div>
-
-        <div class="section-card">
-            <label class="section-title">⚠️ Defeitos Encontrados</label>
-            <textarea class="form-control obrigatorio" placeholder="Descreva os problemas..."></textarea>
-        </div>
-
-        <div class="section-card">
-            <label class="section-title">📝 Soluções Aplicadas</label>
-            <textarea class="form-control obrigatorio" placeholder="Descreva o que foi feito..."></textarea>
-        </div>
-
-        <div class="section-card">
-            <label class="section-title">📸 Registro Fotográfico</label>
-            <input type="file" id="fotos" class="form-control" multiple accept="image/*">
-        </div>
-
-        <div class="section-card">
-            <label class="section-title">👨‍🔧 Técnico Responsável</label>
-            <select class="form-select obrigatorio" id="tecnico">
-                <option value="">Selecione seu nome...</option>
-                <option>Felipe Teles Parra</option>
-                <option>Samuel Silva Santos</option>
-                <option>Jaqueline Bieging de Oliveira Jacino</option>
-                <option>Brandon Ken Honda</option>
-                <option>Alexandre Vinicius Martins da Silva</option>
-                <option>José Roberto</option>
-                <option>José Luiz</option>
-            </select>
-        </div>
+<div class="main-content">
+    <div class="theme-toggle" onclick="toggleDarkMode()">
+        <span id="theme-icon">🌙</span>
     </div>
 
-    <div class="text-center mt-4 mb-5">
-        <button class="btn btn-primary shadow-sm" onclick="gerarPDF()">📄 Gerar PDF & Copiar Nome</button>
-        <button class="btn btn-success shadow-sm" onclick="abrirDrive()">📂 Abrir Drive do Mês</button>
-    </div>
+    <div class="container py-4">
+        <div id="relatorio">
+            <div class="header">
+                <h3>📋 Relatório de Visita Técnica <br><small style="font-size: 0.6em; opacity: 0.8;">Unidade Regional de Ensino de Caieiras</small></h3>
+            </div>
 
+            <div class="section-card">
+                <label class="section-title">🏫 Unidade Escolar</label>
+                <select class="form-select obrigatorio" id="escola">
+                    <option value="">Selecione a escola...</option>
+                    <option>Escola Estadual Adail Jarbas Duclos</option>
+                    <option>Escola Estadual Afonso Moreno</option>
+                    <option>Escola Estadual Aladino Polon</option>
+                    <option>Escola Estadual Alberto Graf Capitão</option>
+                    <option>Escola Estadual Albino Fiore</option>
+                    <option>Escola Estadual Alfried Theodor Weisflog</option>
+                    <option>Escola Estadual Ana Maria Garrido Orlandin Profª</option>
+                    <option>Escola Estadual Aparecido Roberto Tonellotti Prof.</option>
+                    <option>Escola Estadual Armando Sestini</option>
+                    <option>Escola Estadual Arthur Weingrill</option>
+                    <option>Escola Estadual Azevedo Soares</option>
+                    <option>Escola Estadual Bairro do Itaim</option>
+                    <option>Escola Estadual Bairro Jundiaizinho</option>
+                    <option>Escola Estadual Belém da Serra</option>
+                    <option>Escola Estadual Benedito Aparecido Tavares Prof.</option>
+                    <option>Escola Estadual Benedito Fagundes Marques (BEFAMA)</option>
+                    <option>Escola Estadual Bueno de Azevedo Filho Prof.</option>
+                    <option>Escola Estadual Carlos Augusto de Pádua Fleury Prof.</option>
+                    <option>Escola Estadual Celestina Valente Lengenfelder - Profª</option>
+                    <option>Escola Estadual Chácara Camponesa/ Jd. Vassouras</option>
+                    <option>Escola Estadual Domingos Cambiaghi Prof.</option>
+                    <option>Escola Estadual Élcio José Pereira Cotrim Prof.</option>
+                    <option>Escola Estadual Elvira Parada Manga Profª</option>
+                    <option>Escola Estadual Francisco Gonçalves Vieira Prof.</option>
+                    <option>Escola Estadual Hermelina de Albuquerque Passarella</option>
+                    <option>Escola Estadual Iraci Sartori Vieira da Silva Profª</option>
+                    <option>Escola Estadual Isaías Luiz Matiazzo</option>
+                    <option>Escola Estadual Isaura de Miranda Botto profª</option>
+                    <option>Escola Estadual Isaura Valentini Hanser Profª.</option>
+                    <option>Escola Estadual Ivone dos Anjos da Silva - Profª.</option>
+                    <option>Escola Estadual Jardim Alegria II</option>
+                    <option>Escola Estadual Jardim das Rosas</option>
+                    <option>Escola Estadual Jardim São Francisco</option>
+                    <option>Escola Estadual Jardim Silvia II</option>
+                    <option>Escola Estadual Joaquim Marques da Silva Sobrinho Tenente</option>
+                    <option>Escola Estadual Jocimara Vieira da Silva Profª.</option>
+                    <option>Escola Estadual José Carlos da Silva JR.</option>
+                    <option>Escola Estadual José de Barros Martins Editor</option>
+                    <option>Escola Estadual José parada Prof. (Parque Vitória IV)</option>
+                    <option>Escola Estadual José Roberto Melchior Dr.</option>
+                    <option>Escola Estadual Kátia Maria Tarifa Leme Tonelli Profª.</option>
+                    <option>Escola Estadual Lenita Corrêa Camargo Profª.</option>
+                    <option>Escola Estadual Luiz Alexandre dos Santos Vereador</option>
+                    <option>Escola Estadual Lydia Scalet Walker Profª.</option>
+                    <option>Escola Estadual Maria Zeza Gomes de Oliveira</option>
+                    <option>Escola Estadual Mário Toledo de Moraes Dr.</option>
+                    <option>Escola Estadual Nair Hannickel Romaro</option>
+                    <option>Escola Estadual Nelson Manzanares Dr.</option>
+                    <option>Escola Estadual Nide Zaim Cardoso Profª.</option>
+                    <option>Escola Estadual Odarico Oliveira Nascimento Profª.</option>
+                    <option>Escola Estadual Olindo Dártora Dr.</option>
+                    <option>Escola Estadual Otto Weiszflog</option>
+                    <option>Escola Estadual Ozilde Albuquerque Passarella Dr.</option>
+                    <option>Escola Estadual Parque Cento e Vinte II</option>
+                    <option>Escola Estadual Paulo Duarte</option>
+                    <option>Escola Estadual Pedro Galrão do Nascimento</option>
+                    <option>Escola Estadual Pedro Lelis de Souza (Jd. Luciana II)</option>
+                    <option>Escola Estadual Pedro Paulo Aguiar - PPA</option>
+                    <option>Escola Estadual Pietro Petri</option>
+                    <option>Escola Estadual Rituco Mitani Profª</option>
+                    <option>Escola Estadual Rogério Levorin Prof.</option>
+                    <option>Escola Estadual Suzana Dias</option>
+                    <option>Escola Estadual Ulysses Sanches Ramires Prof.</option>
+                    <option>Escola Estadual Vincenzo Lobassi</option>
+                    <option>Escola Estadual Walter Ribas de Andrade Prof.</option>
+                    <option>Escola Estadual Walther Weiszflog</option>
+                    <option>Escola Estadual Zilton Bicudo Prof.</option>
+                </select>
+            </div>
+
+            <div class="section-card">
+                <label class="section-title">🏢 Dependências Verificadas</label>
+                <div class="row g-2">
+                    <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Direção</div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Secretaria</div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Coordenação</div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Sala Professores</div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Informática</div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input dependencia" type="checkbox"> Sala Leitura</div></div>
+                </div>
+                <input type="text" id="outro" class="form-control mt-3" placeholder="Outra dependência...">
+            </div>
+
+            <div class="section-card">
+                <label class="section-title">🛠️ Itens Avaliados</label>
+                <div class="row g-2">
+                    <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Access Points</div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Notebooks</div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Tablets</div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Câmeras</div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Internet</div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input item" type="checkbox"> Racks/Switches</div></div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <label class="section-title">⚠️ Defeitos Encontrados</label>
+                <textarea class="form-control obrigatorio" placeholder="Descreva os problemas..."></textarea>
+            </div>
+
+            <div class="section-card">
+                <label class="section-title">📝 Soluções Aplicadas</label>
+                <textarea class="form-control obrigatorio" placeholder="Descreva o que foi feito..."></textarea>
+            </div>
+
+            <div class="section-card">
+                <label class="section-title">📸 Registro Fotográfico</label>
+                <input type="file" id="fotos" class="form-control" multiple accept="image/*">
+            </div>
+
+            <div class="section-card">
+                <label class="section-title">👨‍🔧 Técnico Responsável</label>
+                <select class="form-select obrigatorio" id="tecnico">
+                    <option value="">Selecione seu nome...</option>
+                    <option>Felipe Teles Parra</option>
+                    <option>Samuel Silva Santos</option>
+                    <option>Jaqueline Bieging de Oliveira Jacino</option>
+                    <option>Brandon Ken Honda</option>
+                    <option>Alexandre Vinicius Martins da Silva</option>
+                    <option>José Roberto</option>
+                    <option>José Luiz</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="text-center mt-4 mb-5">
+            <button class="btn btn-primary shadow-sm" onclick="gerarPDF()">📄 Gerar PDF & Copiar Nome</button>
+            <button class="btn btn-success shadow-sm" onclick="abrirDrive()">📂 Abrir Drive Atual</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -297,7 +393,6 @@ async function gerarPDF(){
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF();
     
-    // --- GERADOR DE NOME DO ARQUIVO ---
     const escola = document.getElementById("escola").value;
     const tecnico = document.getElementById("tecnico").value;
     const d = new Date();
@@ -307,7 +402,6 @@ async function gerarPDF(){
     const tecnicoNome = tecnico.split(' ')[0];
     const escolaLimpa = escola.replace("Escola Estadual ", "").substring(0, 15).trim();
     
-    // PADRÃO: RVT_Escola_DD-MM-AAAA_Tecnico.pdf
     const nomeArquivo = `RVT_${escolaLimpa}_${dia}-${mes}-${ano}_${tecnicoNome}.pdf`.replace(/\s+/g, '_');
 
     const outro = document.getElementById("outro").value;
@@ -365,8 +459,8 @@ async function gerarPDF(){
     }, 600);
 }
 
-function abrirDrive(){
-    const mes = String(new Date().getMonth() + 1).padStart(2,'0');
+// NOVO: Função para abrir mês específico clicado no painel
+function abrirMes(m) {
     const pastas = {
         "01": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgB1H1R67z9bQpm9GvUrFi2rAQdlYzPToUC5U_YZHeBTa_c?e=cWOTXS",
         "02": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgDz5zErJublQbMtbX1uOo62ARuv-cUEewJ_R2gEsQWPcCU?e=A65i1J",
@@ -381,8 +475,12 @@ function abrirDrive(){
         "11": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgBWo_vtDOYZQI746n-Rng4RAcTusj5tJlP8qd1xrxWenlI?e=vjgtav",
         "12": "https://seesp-my.sharepoint.com/:f:/g/personal/cai_seintec_educacao_sp_gov_br/IgCLc7V6FILISYz-_XVy2oA0AROGLIEN-k7-Bh7voirMYNA?e=7BNiEe"
     };
-    if(pastas[mes]) window.open(pastas[mes], "_blank");
-    else alert("Pasta não encontrada.");
+    if(pastas[m]) window.open(pastas[m], "_blank");
+}
+
+function abrirDrive(){
+    const mes = String(new Date().getMonth() + 1).padStart(2,'0');
+    abrirMes(mes);
 }
 </script>
 
